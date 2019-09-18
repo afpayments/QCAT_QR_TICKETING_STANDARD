@@ -1,0 +1,541 @@
+:internal:
+:classification-label: For External Distribution
+ifdef::internal[]
+:classification-label: For Internal Use Only
+endif::[]
+= Public Key Management System for Signature Algorithm Version 1 and 2
+:author: AF Payments, Ingo Noka
+:revnumber: 1.0_RC1
+:revdate: Sept 11, 2019
+:doctype: article
+:title-page:
+:encoding:  utf-8
+:lang:      en
+:toc:       left
+:toclevels: 4
+:toc-title: Table of Content
+:sectnums:
+:last-update-label:
+:nofooter!:
+:media:     print
+:icons:  font
+:pagenums:
+// Images directory
+:imagesdir: images/
+:numbered:
+:toc: left
+:xrefstyle: full
+// :source-highlighter: pygments
+ifdef::backend-pdf[]
+:stem: latexmath
+//:title-logo-image: image:beep_logo.png[pdfwidth=40%,width=40%,align=right]
+endif::[]
+
+ifdef::internal[]
+[WARNING]
+====
+{classification-label}
+====
+endif::[]
+
+ifndef::internal[]
+[NOTE]
+====
+{classification-label}
+====
+endif::[]
+
+ifdef::internal[]
+:!numbered:
+[discrete]
+== Revisions
+[cols="15%,15%,70%", stripes=none]
+|====
+|Author|Date|Changes
+
+|Ingo Noka| February 27, 2019 | Initial revision
+|Ingo Noka| April 4, 2019 | Add version 2
+|Ingo Noka| June 20, 2019|Add Copyright
+|====
+
+.To Do
+****
+****
+
+
+endif::[]
+
+:numbered:
+
+This document describes the key management requirements and practices of a system that implements the QCAT Signature Version 1 or 2. The examples and commands are included for demonstration and test purposed and assume a Java based implementation of a keystore. The examples only cover version 1.
+
+== Public Key Management System Overview
+
+The following diagram shows a high level overview of how the various cryptographic keys and certificates work together to enable the terminal to verify the authenticity of the QR code.
+
+.Overview of public key management system
+image::signature-version-1-ca-overview.png[]
+
+1. The QCAT Public Key Certificate Authority (CA) is responsible for signing issuer public key certificates. The CA manages at least one public/private key pair.  The strength of that key pair (i.e. the bit-length) should be higher than the bit-length of the QCAT Ticket Issuer keys.  In the case of the QCAT standard signature algorithm version 1, the RSA CA key will be 2048 bits long.
+
+2. The private key of the CA's key pair is used to self-sign the public key of the CA's key pair.
+
+3. The resulting self-signed CA certificate is installed in all validation terminals.  The terminals must ensure  that the CA certificate cannot be changed or replaced easily.
+
+4. Each QCAT Ticket Issuer generates one or more public/private key pairs. The various key pairs can be used to distinguish between host generated QR codes and mobile phone (offline) generated QR codes.  Another use for multiple keys is the assignment of different keys for different QR Code seller and generator. The QCAT Ticket Issuer is identified by the Participant ID (which is assigned by the QCAT Registrar) and the key pair is identified by a Key Identifier which his assigned by the QCAT Ticket Issuer.
+
+5. The QCAT Ticket Issuer's public keys are signed by the CA's private key. The certificate's distinguished name contains the Participant ID and the Key Identifier.
+
+6. The resulting certificate is installed in all validation terminals. The validation terminals should have a mechanism to receive new certificates without manual intervention at the terminal.
+
+7. Every time a new Issuer certificate is loaded into the terminal, the terminal will validate whether the certificate was signed by the CA.  This will ensure that only authenticated issuer certificates are installed in the terminal.
+
+8. The QCAT Ticket Issuer or its ticket sellers and creators use the Issuer's private key to create signatures for QR QCAT tickets.  The signature is then attached to the QR payload and shown on the mobile phone screen or printed on a ticket.
+
+9. When presented with a QCAT signature, the terminal will retrieve the corresponding issuer certificate, which contains the QCAT Ticket Issuer's public key.  The correct certificate is determined by the Creator ID and the Signature Key Identifier, which is included in the QCAT ticket data.
+
+10. Finally, the validation terminal us using the public key from the QCAT Ticket Issuer's certificate to validate the ticket's signature.
+
+== Certificate Authority Private Key and Public Key Certificate
+The self-signed public key certificate of the CA need to be installed in all QCAT validation terminals.  The validation terminals will use this certificate to verify whether issuer public key certificates can be trusted (i.e. whether they have been signed with the private key associated with the CA public key certificate).
+
+=== Configuration Data
+
+.Key and Keystore data
+|====
+|Parameter|Value
+
+|Algorithm|RSA
+|Key Length| 2048 bits
+|Validity Period| 1825 - 3650 ( 5 year to 10 years)
+|Certificate Format| X.509
+|CA Certificate File Name (OpenSSL)| [ca name]-ca-certificate.pem.txt
+|Private Key file name (OpenSSL)| [ca-name]-ca-key.txt
+|Key alias (for Java implementations)|[issuer name]-qr-issuer-key
+|====
+
+.Data for the Distinguished Name of the CA Certificate (example AFPI)
+[cols="20,10,20,50"]
+|====
+|Field|Format|Sample Values|Requirements
+
+|Country Name (2 letter code)
+| [A-Z]{2}
+|`PH`
+|Always `PH`
+
+|State or Province Name (full name)
+| [A-Z]{3,10}
+|`NCR`
+| The province of the HQ of the QCAT Certificate Authority
+
+|Locality Name (eg, city)
+| [A-Z]{3,10}
+| `MAKATI`
+| The city of the HQ of the QCAT Certificate Authority
+
+|Organization Name (eg, company)
+|`[A-Z ]{3,40}`
+| `AF PAYMENTS INC`
+| Always the QCAT Certificate Authority's long name.
+
+|Organizational Unit Name (eg, section)
+| `[A-Z]{3,10}-00000`
+| AFPI-00000
+| Short name plus five zeros indicating that this belongs to the root CA and not an issuer.
+
+|Common Name (eg, fully qualified host name)
+|`QCAT-[0-9]{3}`
+| `QCAT-001`
+| For the CA certificate this will always start with the string `QCAT-`, followed by a three digit version number.  The version number allows for multiple CA key pairs and certificates.  The version number is right aligned and padded with `0` characters to the left.
+|====
+
+The resulting distinguished name will be `"C=PH,ST=NCR,L=MAKATI,O=AF PAYMENTS INC,OU=AFPI-00000,CN=QCAT-001"`.
+
+=== Creation of a CA Public Key Certificate and Private Key using *OpenSSL*
+This section provides a reference implementation that does not take into account the high level of security required for the CA.  In production the CA's public key pair must be generated and used only within a hardware security module.
+
+.OpenSSL Configuration file
+```
+[ req ]
+default_bits            = 2048
+default_md              = sha256
+...
+```
+
+.OpenSSL Command
+```
+$ openssl  req  -config /private/etc/ssl/openssl.cnf -new -keyout afpi-ca-key.txt -x509  -out  afpi-ca-certificate.pem.txt  -days  3650
+Generating a RSA private key
+..............+++++
+...................................................................................................+++++
+unable to write 'random state'
+writing new private key to 'afpi-ca-key.txt'
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) []:PH
+State or Province Name (full name) []:NCR
+Locality Name (eg, city) []:MAKATI
+Organization Name (eg, company) []:AF PAYMENTS INC
+Organizational Unit Name (eg, section) []:AFPI-0000
+Common Name (eg, fully qualified host name) []:QCAT-001
+Email Address []:ingo.noka@afpayments.com
+```
+The PEM file now contains a root certificate.  If opened by a tool like the `keychain` tool of OSX it would like shown in the picture below.
+
+image::osx-keychain-ca-certificate.png[]
+
+== Creation of the Private Key and Public Key Certificate for the QCAT Ticket Issuer
+The QCAT Ticket Issuer will generate one or more private/public key pairs and request the CA to sign the public keys, i.e. generate a public key certificate.
+
+=== Configuration Data
+
+.Key and Keystore data
+|====
+|Parameter|Value
+
+|Algorithm|RSA
+|Key Length| 1024 bits
+|Validity Period| 365 - 1825 ( 1 year to 5 years)
+|Store Type (for Java implementations)| PKCS12
+|Keystore file name (for Java implementations)| [issuer name]-qr-issuer-keystore.p12
+|Key alias (for Java implementations)|[issuer name]-qr-issuer-key
+|====
+
+NOTE: All fields for the distinguished name (DNA) must be filled in and must not be empty or spaces only
+
+.Data for the DNA of the Key (Example bank)
+[cols="20,10,20,50"]
+|====
+|Field|Format|Sample Values|Requirements
+
+|Country Name (2 letter code)
+| [A-Z]{2}
+|`PH`
+|Always `PH`
+
+|State or Province Name (full name)
+| [A-Z]{3,10}
+|`NCR`
+| The province of the HQ of the entity
+
+|Locality Name (eg, city)
+| [A-Z]{3,10}
+| `MAKATI`
+| The city of the HQ of the entity
+
+|Organization Name (eg, company)
+|`[A-Z ]{3,40}`
+| `BANK NAME`
+| Always the entity's long name.
+
+|Organizational Unit Name (eg, section)
+| `[A-Z]{3,10}-[0-9]{5}`
+| BANK-00123
+| Short name plus the participant ID.
+
+|Common Name (eg, fully qualified host name)
+|`[A-Z ]{3, 20}`
+| `BANK BACKEND`
+| Any freeform qualifier that allows for multiple keys per participant ID and identifies the system generating the QR code.  For example, "BANK BACKEND" if the QR data is signed online in the backend or, "BANK MOBILE BANKING APP" if the data is signed offline by the banking application. *The length of this field must not exceed 20 characters and it is strongly recommend to keep the identifier to less than 10 characters.
+|====
+The resulting distinguished name will be "C=PH,ST=NCR,L=MAKATI,O=BANK NAME,OU=BANK-00123,CN=BANK-BACKEND".
+
+Short Name and Participant ID::
+The format must meet the following requirements:
++
+* the short name must only have capital ASCII characters and must be at least 3 characters long and at most 10 characters long.
+* The short name and the participant ID are separated by a `-` character (ASCII code 45)
+* The participant ID must be exactly 5 characters long.  It must consist of digits only (ASCII codes 48 - 57). Participant IDs that are shorter than 6 digits must be right justified and padded with '0' characters on the left. The maximum participant ID is 65535.  The value `00000` is reserved and must not be used.
+
+Key assignment, Common Name - Freeform Key Identifier::
+The validation terminal will use the first key in the keystore that matches the Ticket Creator ID in the QR code and the Signature Key Identifier field if present
+
+=== Generation of a Issuer Key Pair and Public Key Certificate
+
+This section provides a reference implementation that does not take into account the high level of security that should be applied to keeping the issuer's private key confidential.
+
+The actual production implementations will vary depending on whether the private keys are distributed via mobile phones or kept at the backend system level.
+
+.`keytool` command
+----
+$ keytool -genkey -alias bank-qr-issuer-key -keyalg RSA -keysize 1024 -validity 1825 -storetype PKCS12 -keystore bank-qr-issuer-keystore.p12
+Enter keystore password:
+Re-enter new password:
+What is your first and last name?
+  [Unknown]:  BANK BACKEND
+What is the name of your organizational unit?
+  [Unknown]:  BANK-00123
+What is the name of your organization?
+  [Unknown]:  BANK NAME
+What is the name of your City or Locality?
+  [Unknown]:  MAKATI
+What is the name of your State or Province?
+  [Unknown]:  NCR
+What is the two-letter country code for this unit?
+  [Unknown]:  PH
+Is CN=BANK BACKEND, OU=BANK-00123, O=BANK NAME, L=MAKATI, ST=NCR, C=PH correct?
+  [no]:  yes
+----
+
+== Create a QCAT Ticket Issuer Certificate Request for the CA
+With this request the QCAT Ticket Issuer is asking the Certificate Authority (in this case the AFPI) to sign the public key.
+
+The resulting certificate can then be loaded into terminal that have the CA's public key certificate loaded.
+
+=== Command
+
+.`keytool` command
+```
+keytool -certreq -keystore bank-qr-issuer-keystore.p12 -alias bank-qr-issuer-key -keyalg rsa -file bank-qr-issuer.csr
+```
+
+== Sign the Public Key Certificate of the QCAT Ticket Issuer
+The Certificate Authority (in this case AFPI) signs the QCAT Ticket Issuer's public key certificate.
+
+=== Configuration Data
+
+|====
+|Parameter|Value
+
+|Certificate Type| X.509
+|Validity Period|Should match the validity period of the issuer's public key
+|====
+
+=== Command
+
+.`openssl` command
+```
+$ openssl  x509  -req -CA afpi-ca-certificate.pem.txt -CAkey afpi-ca-key.txt -in bank-qr-issuer.csr -out bank-bank-qr-issuer.cer  -days 1825  -CAcreateserial
+Signature ok
+subject=/C=PH/ST=NCR/L=MAKATI/O=BANK NAME/OU=BANK-00123/CN=BANK BACKEND
+Getting CA Private Key
+Enter pass phrase for afpi-ca-key.txt:
+```
+
+== Load the Root Public Key Certificate of the CA into the QCAT Ticket Issuer `keystore`
+This step is necessary to allow the QCAT Ticket Issuer's keystore to verify whether the QCAT Ticket Issuer's certificate is correctly signed with the CA private key.
+
+=== Command
+
+.`keytool` command
+```
+$ keytool -import -keystore bank-qr-issuer-keystore.p12 -file afpi-ca-certificate.pem.txt -alias afpi-ca-root
+Enter keystore password:
+Owner: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH
+Issuer: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH
+Serial number: f7ffde4bfd3685ab
+Valid from: Wed Feb 27 12:59:40 PHT 2019 until: Sat Feb 24 12:59:40 PHT 2029
+Certificate fingerprints:
+	 MD5:  18:CE:25:59:04:B3:B4:64:3C:D2:2E:E1:08:0B:68:53
+	 SHA1: 30:20:10:DE:B2:63:0F:13:AF:5A:9D:A8:02:F4:2E:24:9A:76:01:7E
+	 SHA256: 9E:CD:B5:43:C8:69:74:61:82:43:1F:24:B9:81:57:1E:CD:DF:04:36:B0:4E:4E:76:2D:58:3A:0B:BE:74:3C:9E
+	 Signature algorithm name: SHA256withRSA
+	 Version: 1
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+```
+
+NOTE: The `keytool` is asking whether the certificate is trusted.  In this step you need to review the information printed by the keytool to ensure you are importing a valid and authentic CA certificate.
+
+== Load the Public Key Certificate of the QCAT Ticket Issuer
+
+=== Command
+
+```
+keytool -import -keystore bank-qr-issuer-keystore.p12 -file afpi-bank-qr-issuer.cer -alias bank-issuer
+Enter keystore password:
+Certificate was added to keystore
+```
+
+NOTE: In this case the `keytool` is not asking whether the certificate is trusted.  This is because we loaded the CA certificate earlier and trusted it.  Now that we load a certificate that was signed by the private key associated with the CA certificate, the keytool can verify whether the certificate is authentic to determine whether it trusts the new certificate or not.  *If the `keytool` is asking whether the certificate is trusted always say no and investigate!*
+
+
+== Load the Root Public Key Certificate of the CA into the QCAT Ticket Acceptor's `keystore`
+In this step we create the keystore that will be loaded into the validation terminals.  The import of the CA certificate is necessary to allow the validation terminal's keystore to verify whether the newly imported QCAT Ticket Issuer's certificate are correctly signed with the CA private key, i.e. that they are genuine.
+
+NOTE: Make sure that no private keys are loaded unless the `keystore` is installed in a terminal that creates QR codes offline, for example a cash ticketing terminal.
+
+=== Command
+.`keytool` command
+```
+$ keytool -import -keystore afpi-trusted-certs.p12 -file afpi-ca-certificate.pem.txt -alias afpi-ca-root
+Enter keystore password:
+Re-enter new password:
+Owner: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH
+Issuer: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH
+Serial number: f7ffde4bfd3685ab
+Valid from: Wed Feb 27 12:59:40 PHT 2019 until: Sat Feb 24 12:59:40 PHT 2029
+Certificate fingerprints:
+	 MD5:  18:CE:25:59:04:B3:B4:64:3C:D2:2E:E1:08:0B:68:53
+	 SHA1: 30:20:10:DE:B2:63:0F:13:AF:5A:9D:A8:02:F4:2E:24:9A:76:01:7E
+	 SHA256: 9E:CD:B5:43:C8:69:74:61:82:43:1F:24:B9:81:57:1E:CD:DF:04:36:B0:4E:4E:76:2D:58:3A:0B:BE:74:3C:9E
+	 Signature algorithm name: SHA256withRSA
+	 Version: 1
+Trust this certificate? [no]:  yes
+Certificate was added to keystore
+```
+NOTE: The `keytool` is asking whether the certificate is trusted.  In this step you need to review the information printed by the keytool to ensure you are importing a valid and authentic CA certificate.
+
+
+== Load the Public Key Certificate of the QCAT Ticket Issuer
+
+=== Command
+
+.`keytool` command
+```
+$ keytool -import -keystore afpi-trusted-certs.p12 -file afpi-bank-qr-issuer.cer -alias bank-issuer
+Enter keystore password:
+Certificate was added to keystore
+```
+
+NOTE: In this case the `keytool` is not asking whether the certificate is trusted.  This is because we loaded the CA certificate earlier and trusted it.  *If the `keytool` is asking whether the certificate is trusted always say no and investigate!*
+
+
+== Result of the Key and Certificate Creation
+
+=== Files and Content
+
+As result of the reference example, we now have the following:
+
+[cols="30,70"]
+|====
+|File|Meaning and Use
+
+.4+| `bank-qr-issuer-keystore.p12`
+| File contains the Issuer's keystore with the following keys and certificates:
+|`bank-qr-issuer-key`, PrivateKeyEntry, Private key used to generate QR code signatures
+|`afpi-ca-root`, trustedCertEntry, The self-signed root certificate of the CA
+|`bank-issuer`, trustedCertEntry, The CA-signed issuer certificate that can be used to validate QR code signatures
+
+.3+| `afpi-trusted-certs.p12`
+| File contains the AFSC provider validation terminal keystore with the following keys and certificates:
+|`afpi-ca-root`, trustedCertEntry, The self-signed root certificate of the CA
+|`bank-issuer`, trustedCertEntry, The CA-signed issuer certificate that can be used to validate QR code signatures
+
+| `afpi-ca-certificate.pem.txt`
+| The CA's self-signed public key certificate.  This can be used to create new keystores for validation terminals.
+
+| `afpi-ca-key.txt`
+| The password protected private key of the CA.  This can be used to create new public key certificates for additional QCAT Ticket Issuer public key certificates.
+
+|`afpi-bank-qr-issuer.cer`
+| The QCAT Ticket Issuer's CA-signed public key certificate. This can be imported in keystores that need to validate QR code signatures generated by the QCAT Ticket Issuer.
+
+| `afpi-ca-certificate.srl` and `bank-qr-issuer.csr`
+| Can be deleted.
+
+|====
+
+=== Verify that `keystore` has the correct content
+
+Here we are using the example of the QCAT Ticket Issuer key store to validate the content.
+
+.`keytool` command
+----
+$ keytool -list -keystore bank-qr-issuer-keystore.p12 -v
+Enter keystore password:
+
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 3 entries<1>
+
+----
+<1> The Keystore contains the private key of the QCAT Ticket Issuer, the self-signed root Public Key Certificate of the CA and the QCAT Ticket Issuer's public key certificate signed by the CA's root key
+
+.Issuer Private Key
+----
+Alias name: bank-qr-issuer-key
+Creation date: 02 27, 19
+Entry type: PrivateKeyEntry <1>
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=BANK BACKEND, OU=BANK-00123, O=BANK NAME, L=MAKATI, ST=NCR, C=PH
+Issuer: CN=BANK BACKEND, OU=BANK-00123, O=BANK NAME, L=MAKATI, ST=NCR, C=PH <2>
+Serial number: 58349b6c
+Valid from: Wed Feb 27 13:17:17 PHT 2019 until: Mon Feb 26 13:17:17 PHT 2024
+Certificate fingerprints:
+	 MD5:  B3:FE:72:4E:1A:CD:DA:1C:88:4E:FE:60:87:72:41:8E
+	 SHA1: 26:2D:C5:6E:D4:3D:A3:DA:22:34:44:B1:41:82:5D:E6:C8:A2:1B:1C
+	 SHA256: 38:86:2E:D3:2C:A5:AB:80:0B:D8:7D:BD:73:BB:47:37:26:86:BA:F7:C4:7E:A8:8A:BC:D7:DD:3A:AA:2D:6D:0F
+	 Signature algorithm name: SHA256withRSA
+	 Version: 3
+
+Extensions:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 36 8E 14 2E 5B 6E 17 FF   9C 5D 2D 3E CC ED DE 75  6...[n...]->...u
+0010: DF E8 0E 04                                        ....
+]
+]
+
+----
+<1> This is the private key of the QCAT Ticket Issuer
+<2> As the owner and the issuer of the certificate are the same, the key is self-signed. But this does not matter as the private key will never be given to an outside party, so that the certificate never needs to be verified.
+
+.CA Root Certificate
+----
+Alias name: afpi-ca-root
+Creation date: 02 27, 19
+Entry type: trustedCertEntry <1>
+
+Owner: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH
+Issuer: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC, L=MAKATI, ST=NCR, C=PH <2>
+Serial number: f7ffde4bfd3685ab
+Valid from: Wed Feb 27 12:59:40 PHT 2019 until: Sat Feb 24 12:59:40 PHT 2029
+Certificate fingerprints:
+	 MD5:  18:CE:25:59:04:B3:B4:64:3C:D2:2E:E1:08:0B:68:53
+	 SHA1: 30:20:10:DE:B2:63:0F:13:AF:5A:9D:A8:02:F4:2E:24:9A:76:01:7E
+	 SHA256: 9E:CD:B5:43:C8:69:74:61:82:43:1F:24:B9:81:57:1E:CD:DF:04:36:B0:4E:4E:76:2D:58:3A:0B:BE:74:3C:9E
+	 Signature algorithm name: SHA256withRSA
+	 Version: 1
+
+----
+<1> This is the root Public Key Certificate of the CA
+<2> It is self signed as there is no higher authority that could have signed the public key certificate
+
+.QCAT Ticket Issuer CA-signed Certificate
+----
+Alias name: bank-issuer
+Creation date: 02 27, 19
+Entry type: trustedCertEntry <1>
+
+Owner: CN=BANK BACKEND, OU=BANK-00123, O=BANK NAME, L=MAKATI, ST=NCR, C=PH<2>
+Issuer: EMAILADDRESS=ingo.noka@afpayments.com, CN=QCAT-001, OU=AFPI-0000, O=AF PAYMENTS INC,<2> L=MAKATI, ST=NCR, C=PH
+Serial number: ff73120e5c6644a9
+Valid from: Wed Feb 27 13:23:05 PHT 2019 until: Mon Feb 26 13:23:05 PHT 2024
+Certificate fingerprints:
+	 MD5:  BC:06:F9:5E:FC:D3:8B:FD:46:13:F0:2B:69:59:03:32
+	 SHA1: 5F:6E:A3:2E:CA:F1:C4:2D:D0:D5:83:21:DE:93:80:6E:B5:63:4E:12
+	 SHA256: 0D:87:CA:2C:B4:04:1D:85:69:87:CB:75:09:7B:AD:D3:55:68:CA:34:7C:AB:7B:6F:38:AE:C2:52:B9:10:63:E1
+	 Signature algorithm name: SHA256withRSA
+	 Version: 1
+
+----
+<1> This is the signed Public Key Certificate of the QCAT Ticket Issuer
+<2> Owner and issuer are different.  The Issuer is identified as the CA.  That means this certificate is signed by the CA (i.e. the certificate is issued by the CA, but the certificate and the public key are owned by the QCAT Ticket Issuer)
+
+:numbered!:
+== Copyright
+Copyright © 2018 by AF Payments Inc
+
+All rights reserved. This specification or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the Copyright owner.
+
+The Specifications are provided “AS IS” without warranties of any kind, and AF Payments Inc. neither assumes nor accepts any liability for any errors or omissions contained in these Specifications. AF PAYMENTS INC DISCLAIMS ALL REPRESENTATIONS AND WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON- INFRINGEMENT, AS TO THESE SPECIFICATIONS.
+
+AF Payments Inc makes no representations or warranties with respect to intellectual property rights of any third parties in or in relation to the Specifications. AF Payments Inc. undertakes no responsibility to determine whether any implementation of the Specifications may violate, infringe, or otherwise exercise the patent, copyright, trademark, trade secret, know-how, or other intellectual property rights of third parties, and thus any person who implements any part of the Specifications should consult an intellectual property attorney before any such implementation.
+
+Without limiting the foregoing, the Specifications may provide for the use of public key encryption and other technology, which may be the subject matter of patents in several countries. Any party seeking to implement these Specifications is solely responsible for determining whether its activities require a license to any such technology, including for patents on public key encryption technology. AF Payments Inc. shall not be liable under any theory for any party’s infringement of any intellectual property rights in connection with the Specifications.
+
+QR Code is a registered trademark of DENSO WAVE.

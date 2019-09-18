@@ -1,0 +1,60 @@
+// tag::85-value[]
+`CPV01`
+// end::85-value[]
+// tag::85[]
+`85054350563031`
+// end::85[]
+// tag::4F-value[]
+`QCAT01`
+// end::4F-value[]
+// tag::4F[]
+`4F06514341543031`
+// end::4F[]
+// tag::C1-value[]
+`1250184`
+// end::C1-value[]
+// tag::C1[]
+`C103131388`
+// end::C1[]
+// tag::C2-value[]
+`275`
+// end::C2-value[]
+// tag::C2[]
+`C2020113`
+// end::C2[]
+// tag::C3-value[]
+`2019-09-11T19:38:30+08:00`
+// end::C3-value[]
+// tag::C3[]
+`C3045D78DCB6`
+// end::C3[]
+// tag::C4-value[]
+`PT30M`
+// end::C4-value[]
+// tag::C4[]
+`C4020708`
+// end::C4[]
+// tag::C5-value[]
+`LRT1 Only (code: 2)`
+// end::C5-value[]
+// tag::C5[]
+`C50102`
+// end::C5[]
+// tag::C8-value[]
+`2019-09-11T19:39:00+08:00`
+// end::C8-value[]
+// tag::C8[]
+`C8045D78DCD4`
+// end::C8[]
+// tag::CA-value[]
+`1234567890123456`
+// end::CA-value[]
+// tag::CA[]
+`CA1031323334353637383930313233343536`
+// end::CA[]
+// tag::DE-value[]
+`Version: 2, SHA1withECDSA`
+// end::DE-value[]
+// tag::DE[]
+`DE38023035021831EC  ...  05FEBFFC5D82C8BB7B`
+// end::DE[]

@@ -1,0 +1,8 @@
+build/
+*.pdf
+*.html
+*.zip
+qcat-tags.adoc
+.idea/
+log.txt
+.DS_Store

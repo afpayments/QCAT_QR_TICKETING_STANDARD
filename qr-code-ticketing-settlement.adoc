@@ -1,0 +1,186 @@
+:internal:
+:classification-label: For External Distribution
+ifdef::internal[]
+:classification-label: For Internal Use Only
+endif::[]
+= QR Code Standard for Transport Ticketing - Settlement Rules
+:author: AF Payments, Ingo Noka
+:revnumber: 1.0_RC1
+:revdate: Sept 11, 2019
+:doctype: article
+:title-page:
+:encoding:  utf-8
+:lang:      en
+:toc:       left
+:toclevels: 4
+:toc-title: Table of Content
+:sectnums:
+:last-update-label:
+:nofooter!:
+:media:     print
+:icons:  font
+:pagenums:
+// Images directory
+:imagesdir: images/
+:numbered:
+:toc: left
+:xrefstyle: full
+ifdef::backend-pdf[]
+:stem: latexmath
+//:title-logo-image: image:beep_logo.png[pdfwidth=40%,width=40%,align=right]
+endif::[]
+
+ifdef::internal[]
+[WARNING]
+====
+{classification-label}
+====
+endif::[]
+
+ifndef::internal[]
+[NOTE]
+====
+{classification-label}
+====
+endif::[]
+
+ifdef::internal[]
+:!numbered:
+[discrete]
+== Revisions
+[cols="15%,15%,70%", stripes=none]
+|====
+|Author|Date|Changes
+
+.1+|Ingo Noka .1+| February 14, 2018
+| Initial Version
+
+.1+|Ingo Noka .1+| June 20, 2019
+|Add Copyright
+
+.1+|Ingo Noka .1+| Aug 8, 2019
+| Correct formatting
+
+.1+|Ingo Noka .1+| Sept 11, 2019
+| user role names as defined in appendix of standard
+
+
+|====
+
+.To Do
+****
+
+****
+
+
+endif::[]
+
+:numbered:
+
+== Post-Paid Ticket Settlement Flow
+
+. The ticket creator (usually the same as the funding provider) provides a mobile phone application to the passenger.  The passenger uses the mobile phone application to create a post-paid QR code.  It is up to the QCAT Ticket Issuer to decide what parameters are allowed for such tickets.  For example, the QCAT Ticket Issuer may decide that post-paid tickets must have at least a pre-defined entry station and a refresh period of no more than 30 seconds.
++
+====
+No funds have been moved yet.
+====
+
+. The funding provider may block a pre-authorized amount in the passengers eWallet to ensure that the passenger does not use the money otherwise.
+
+. When the passenger presents the QR ticket at the entry terminal, a transaction record containing the time and place of entry is sent to the AFCS backend system.
++
+====
+Still no money has been moved yet. In fact, at this point the QCAT Ticket Acceptor does not know where the passenger will travel to and how much their fare will ultimately be
+
+====
+
+. When the passenger presents the ticket at the exit terminal, a transaction record containing the time and place of exit is sent to the FCS backend system
++
+====
+Now the QCAT Ticket Acceptor is able to calculate the fare amount by combining the entry and exit transaction records based on the ticket number and/or account identifiers.
+====
+
+. The QCAT Ticket Acceptor generates a settlement record for the fare amount and sends it to the transport operator and the QCAT Ticket Issuer.
+
+. The QCAT Ticket Issuer will perform settlement with the funding provider.
++
+====
+At this point the fare amount is with the QCAT Ticket Issuer.
+====
+
+. The QCAT Ticket Issuer then performs settlement with the QCAT Ticket Acceptor.
++
+====
+The funds are not with the QCAT Ticket Acceptor.
+====
+
+. The QCAT Ticket Acceptor settles the fare with the transport operator.
++
+====
+The funds have now arrived at their final destination.  The transfer of money from the passenger to the transport operator is complete.
+====
+
+
+== Pre-Paid Ticket Settlement Flow
+
+. The ticket creator/seller collects payment from the passenger before creating and issuing the ticket.  The mode of payment is outside the QR code ticketing specification.  The passenger may pay by cash, payment card, e-Wallet etc.
++
+====
+At this point the money has moved from the passenger to the ticket creator/seller.  There is no settlement liability for the ticket creator/seller yet.
+====
+
+. The passenger uses the ticket to enter the paid area of a transport service operation.  The entry terminal validates, stores and forwards the data from the ticket to the QCAT Ticket Acceptor's backend system.
++
+====
+At this point no money has moved yet.  However,
+
+* as soon as the ticket has been validated and the passenger has entered the paid area, the  ticket creator/seller has an obligation to pay the ticket price to the QCAT Ticket Acceptor, and
+* the QCAT Ticket Acceptor has an obligation to pay the ticket price to the transport operator.
+====
+
+. The QCAT Ticket Acceptor creates a transaction for each ticket that has been validated successfully. The transaction is then transformed into a settlement record for the Transport Operator and the Ticket Creator/Seller.
++
+====
+At this point, the Transport Operator and the Ticket Creator/Seller perform reconciliation to ensure that the settlement transactions are accurate and complete.
+====
+
+. The QCAT Ticket Acceptor then deposits the settlement funds with the Transport Operators.  The ticket creator/seller deposits the settlement funds with the QCAT Ticket Acceptor.
++
+====
+At this point the Transport Operator has been paid and the settlement process is complete.
+====
+
+== Dispute Resolution
+
+Regardless of the liability defined in the dispute resolution rules, the QCAT Ticket Issuer should not withhold funds if the passenger has paid for the ticket and does not dispute that they have used the ticket.
+
+[cols="20,60,20"]
+|====
+|Dispute|Description|Liability
+
+|Fraudulently created valid ticket|A valid ticket was created without the authorization of the QCAT Ticket Issuer, either due to a technical error or a security breach|QCAT Ticket Issuer
+|Duplicate ticket (with Boarding Station)|A ticket was used more than once.  Potentially the ticket was copied. This dispute rule only applies to tickets with a defined Boarding Station.  The assumption is that because of timing and networking restrictions, the QCAT Ticket Acceptor is only able to prevent fraudulent use of duplicate tickets within the same station or vehicle.|QCAT Ticket Acceptor
+|Duplicate ticket (without Boarding Station)|A ticket was used more than once.  Potentially the ticket was copied.|QCAT Ticket Issuer
+|Expired ticket|The ticket was expired at the time of the transaction. The time of transaction is determined by the validation terminal.  The QCAT Ticket Issuer may dispute the accuracy of the terminal timestamp.|QCAT Ticket Acceptor
+|Ticket not refreshed|The ticket exceeded the refresh period at the time of the transaction|QCAT Ticket Acceptor
+|Different Boarding Station|The ticket was accepted at a station different from the station indicated in the ticket.|QCAT Ticket Acceptor
+|Different Destination Station|The passenger alighted at a different station than the destination station indicated in the ticket. If the actual fare is lower than the face value of the ticket, it is at the discretion of the QCAT Ticket Acceptor to refund the QCAT Ticket Issuer or the passenger. If the refund is given to the passenger directly, only the actual fare shall be settled with the Transport Operator and the QCAT Ticket Issuer. |QCAT Ticket Acceptor (only for the difference between ticket prices and actual fare).
+|Wrong route or vehicle number|The ticket was used on the wrong vehicle or for a different route. The QCAT Ticket Acceptor must pay the actual fare for the route and vehicle to the Transport Operator.  The QCAT Ticket Issuer has to pay the face value of the ticket, or the actual fare if it is lower than the face value of the ticket. If possible the QCAT Ticket Issuer should attempt to get the difference between actual fare and ticket face value from the passenger and settle the actual fare with the QCAT Ticket Acceptor.|QCAT Ticket Acceptor
+|Validity Domain or PTO list incorrect|The ticket was accepted by a Transport Operator that is not included in the validity domain or the list of transport operator IDs.|QCAT Ticket Acceptor
+|Invalid signature|The ticket signature is incorrect or no signature is included|QCAT Ticket Acceptor
+|Revoked Signature Key Certificate|For transaction signatures that use a PKI scheme for signature creation and validation, the public key assigned to the ticket creator was revoked at the time of transaction.  The QCAT Ticket Acceptor must define a grace period between revocation and the revocation list update on the validation terminal.|QCAT Ticket Issuer if transaction time is within the grace period.  The QCAT Ticket Acceptor otherwise.
+|====
+
+:numbered!:
+== Copyright
+Copyright © 2018 by AF Payments Inc
+
+All rights reserved. This specification or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the Copyright owner.
+
+The Specifications are provided “AS IS” without warranties of any kind, and AF Payments Inc. neither assumes nor accepts any liability for any errors or omissions contained in these Specifications. AF PAYMENTS INC DISCLAIMS ALL REPRESENTATIONS AND WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON- INFRINGEMENT, AS TO THESE SPECIFICATIONS.
+
+AF Payments Inc makes no representations or warranties with respect to intellectual property rights of any third parties in or in relation to the Specifications. AF Payments Inc. undertakes no responsibility to determine whether any implementation of the Specifications may violate, infringe, or otherwise exercise the patent, copyright, trademark, trade secret, know-how, or other intellectual property rights of third parties, and thus any person who implements any part of the Specifications should consult an intellectual property attorney before any such implementation.
+
+Without limiting the foregoing, the Specifications may provide for the use of public key encryption and other technology, which may be the subject matter of patents in several countries. Any party seeking to implement these Specifications is solely responsible for determining whether its activities require a license to any such technology, including for patents on public key encryption technology. AF Payments Inc. shall not be liable under any theory for any party’s infringement of any intellectual property rights in connection with the Specifications.
+
+QR Code is a registered trademark of DENSO WAVE.

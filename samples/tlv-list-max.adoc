@@ -1,0 +1,138 @@
+// tag::85-value[]
+`CPV01`
+// end::85-value[]
+// tag::85[]
+`85054350563031`
+// end::85[]
+// tag::4F-value[]
+`QCAT01`
+// end::4F-value[]
+// tag::4F[]
+`4F06514341543031`
+// end::4F[]
+// tag::C1-value[]
+`1250184`
+// end::C1-value[]
+// tag::C1[]
+`C103131388`
+// end::C1[]
+// tag::C2-value[]
+`275`
+// end::C2-value[]
+// tag::C2[]
+`C2020113`
+// end::C2[]
+// tag::C3-value[]
+`2019-09-11T19:38:30+08:00`
+// end::C3-value[]
+// tag::C3[]
+`C3045D78DCB6`
+// end::C3[]
+// tag::C4-value[]
+`PT15M`
+// end::C4-value[]
+// tag::C4[]
+`C4020384`
+// end::C4[]
+// tag::C5-value[]
+`Only non rail operators (code: 5)`
+// end::C5-value[]
+// tag::C5[]
+`C50105`
+// end::C5[]
+// tag::C6-value[]
+`23`
+// end::C6-value[]
+// tag::C6[]
+`C60117`
+// end::C6[]
+// tag::C6-value[]
+`56`
+// end::C6-value[]
+// tag::C6[]
+`C60138`
+// end::C6[]
+// tag::C7-value[]
+`2019-09-11T19:38:30+08:00`
+// end::C7-value[]
+// tag::C7[]
+`C7045D78DCB6`
+// end::C7[]
+// tag::C8-value[]
+`2019-09-11T19:39:00+08:00`
+// end::C8-value[]
+// tag::C8[]
+`C8045D78DCD4`
+// end::C8[]
+// tag::C9-value[]
+`1`
+// end::C9-value[]
+// tag::C9[]
+`C90101`
+// end::C9[]
+// tag::CA-value[]
+`1234567890123456`
+// end::CA-value[]
+// tag::CA[]
+`CA1031323334353637383930313233343536`
+// end::CA[]
+// tag::CB-value[]
+`23`
+// end::CB-value[]
+// tag::CB[]
+`CB0117`
+// end::CB[]
+// tag::CC-value[]
+`17`
+// end::CC-value[]
+// tag::CC[]
+`CC0111`
+// end::CC[]
+// tag::CD-value[]
+`345`
+// end::CD-value[]
+// tag::CD[]
+`CD020159`
+// end::CD[]
+// tag::CE-value[]
+`4`
+// end::CE-value[]
+// tag::CE[]
+`CE0104`
+// end::CE[]
+// tag::CF-value[]
+`3D`
+// end::CF-value[]
+// tag::CF[]
+`CF023344`
+// end::CF[]
+// tag::D0-value[]
+`ECO`
+// end::D0-value[]
+// tag::D0[]
+`D00345434F`
+// end::D0[]
+// tag::D1-value[]
+`PHP 30.00`
+// end::D1-value[]
+// tag::D1[]
+`D1020BB8`
+// end::D1[]
+// tag::D2-value[]
+`STAG-AFPI-V2`
+// end::D2-value[]
+// tag::D2[]
+`D20C535441472D414650492D5632`
+// end::D2[]
+// tag::D3-value[]
+`1234567890`
+// end::D3-value[]
+// tag::D3[]
+`D30A31323334353637383930`
+// end::D3[]
+// tag::DE-value[]
+`Version: 2, SHA1withECDSA`
+// end::DE-value[]
+// tag::DE[]
+`DE3802303502185802  ...  EE2F1ED1B399DFCB4A`
+// end::DE[]

@@ -1,0 +1,54 @@
+// tag::85-value[]
+`CPV01`
+// end::85-value[]
+// tag::85[]
+`85054350563031`
+// end::85[]
+// tag::4F-value[]
+`QCAT01`
+// end::4F-value[]
+// tag::4F[]
+`4F06514341543031`
+// end::4F[]
+// tag::C1-value[]
+`1250184`
+// end::C1-value[]
+// tag::C1[]
+`C103131388`
+// end::C1[]
+// tag::C2-value[]
+`275`
+// end::C2-value[]
+// tag::C2[]
+`C2020113`
+// end::C2[]
+// tag::C3-value[]
+`2019-09-11T19:38:31+08:00`
+// end::C3-value[]
+// tag::C3[]
+`C3045D78DCB7`
+// end::C3[]
+// tag::C4-value[]
+`PT30M`
+// end::C4-value[]
+// tag::C4[]
+`C4020708`
+// end::C4[]
+// tag::C6-value[]
+`100`
+// end::C6-value[]
+// tag::C6[]
+`C60164`
+// end::C6[]
+// tag::CB-value[]
+`1`
+// end::CB-value[]
+// tag::CB[]
+`CB0101`
+// end::CB[]
+// tag::DE-value[]
+`Version: 2, SHA1withECDSA`
+// end::DE-value[]
+// tag::DE[]
+`DE38023035021900A3  ...  0716A8A85C488A4DDC`
+// end::DE[]

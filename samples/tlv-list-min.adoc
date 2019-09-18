@@ -1,0 +1,42 @@
+// tag::85-value[]
+`CPV01`
+// end::85-value[]
+// tag::85[]
+`85054350563031`
+// end::85[]
+// tag::4F-value[]
+`QCAT01`
+// end::4F-value[]
+// tag::4F[]
+`4F06514341543031`
+// end::4F[]
+// tag::C1-value[]
+`1250184`
+// end::C1-value[]
+// tag::C1[]
+`C103131388`
+// end::C1[]
+// tag::C2-value[]
+`275`
+// end::C2-value[]
+// tag::C2[]
+`C2020113`
+// end::C2[]
+// tag::C3-value[]
+`2019-09-11T19:38:30+08:00`
+// end::C3-value[]
+// tag::C3[]
+`C3045D78DCB6`
+// end::C3[]
+// tag::C4-value[]
+`PT15M`
+// end::C4-value[]
+// tag::C4[]
+`C4020384`
+// end::C4[]
+// tag::DE-value[]
+`Version: 2, SHA1withECDSA`
+// end::DE-value[]
+// tag::DE[]
+`DE390230360219008C  ...  836B842B8F31BC00C4`
+// end::DE[]

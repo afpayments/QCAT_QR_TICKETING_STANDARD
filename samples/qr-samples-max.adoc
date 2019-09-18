@@ -1,0 +1,242 @@
+
+== Ticket with the most possible data
+This is a sample of a ticket that contains all data fields.
+The combination of data does not necessarily makes sense, but this sample gives an indication
+how large the data of a single ticket could become.
+
+=== Ticket Data
+This is the input data for the ticket creation.  The signature will be added during conversion to a
+TLV object, because the input for the signature algorithm is the BER encoded TLV data.
+
+.Ticket data
+....
+Ticket:
+   Mandatory:
+       Id:                         1345000001238
+       Creator:                    275
+       Creation time :             2019-09-11T19:38:30+08:00
+       Validity period :           PT15M
+   Optional:
+       Terminal ID:                1234567890
+       Validity domain :           Only non rail operators (code: 5)
+       Transport Operator IDs:     [23,56]
+       Effective time:             2019-09-11T19:38:30+08:00
+       refreshTime:                2019-09-11T19:39:00+08:00
+       Ticket type :               Standard (code: 1)
+       Account ID :                1234567890123456
+       Boarding station :          23
+       Destination station :       17
+       Vehicle Id :                345
+       Route Id :                  4
+       Seat Number :               3D
+       Seat class :                ECO
+       Authorized amount :         PHP 30.00
+       Signature:
+          V: 2
+          S: 
+             Version: 2, SHA1withECDSA
+
+....
+
+=== TLV
+This is the TLV object tree containing the encoded ticket data.  Each element in the TLV tree is either
+a simple TLV or a constructed TLV.  All TLV objects have a Tag (T) indicating the type and
+meaning of the field, a length providing the number of bytes of the content of the field and a
+value which contains the actual content of the field.  The value of constructed TLV is a list of TLV
+ objects.
+// tag::tlv[]
+:tabsize: 4
+....
+T: 85 (5/CONTEXT_SPECIFIC/Simple: EMV Payload Indicator)
+L: 05 (5)
+V: 4350563031 (CPV01)
+------
+T: 61 (1/APPLICATION/Constructed: Application Template)
+L: 81B7 (183)
+	T: 4F (15/APPLICATION/Simple: ADF name)
+	L: 06 (6)
+	V: 514341543031 (QCAT01)
+	------
+	T: 63 (3/APPLICATION/Constructed: Application specific transparent template)
+	L: 81AC (172)
+		T: C1 (1/PRIVATE/Simple: Ticket Id)
+		L: 03 (3)
+		V: 131388 (1250184)
+		------
+		T: C2 (2/PRIVATE/Simple: Creator Id)
+		L: 02 (2)
+		V: 0113 (275)
+		------
+		T: C3 (3/PRIVATE/Simple: Creation Timestamp)
+		L: 04 (4)
+		V: 5D78DCB6 (2019-09-11T19:38:30+08:00)
+		------
+		T: C4 (4/PRIVATE/Simple: Validity Period)
+		L: 02 (2)
+		V: 0384 (PT15M)
+		------
+		T: C5 (5/PRIVATE/Simple: Validity domain)
+		L: 01 (1)
+		V: 05 (Only non rail operators (code: 5))
+		------
+		T: C6 (6/PRIVATE/Simple: Transport Operator Id)
+		L: 01 (1)
+		V: 17 (23)
+		------
+		T: C6 (6/PRIVATE/Simple: Transport Operator Id)
+		L: 01 (1)
+		V: 38 (56)
+		------
+		T: C7 (7/PRIVATE/Simple: Effective Time)
+		L: 04 (4)
+		V: 5D78DCB6 (2019-09-11T19:38:30+08:00)
+		------
+		T: C8 (8/PRIVATE/Simple: Refresh Time)
+		L: 04 (4)
+		V: 5D78DCD4 (2019-09-11T19:39:00+08:00)
+		------
+		T: C9 (9/PRIVATE/Simple: Ticket Type)
+		L: 01 (1)
+		V: 01 (1)
+		------
+		T: CA (10/PRIVATE/Simple: Account Id)
+		L: 10 (16)
+		V: 31323334353637383930313233343536 (1234567890123456)
+		------
+		T: CB (11/PRIVATE/Simple: Boarding Station)
+		L: 01 (1)
+		V: 17 (23)
+		------
+		T: CC (12/PRIVATE/Simple: Destination Station)
+		L: 01 (1)
+		V: 11 (17)
+		------
+		T: CD (13/PRIVATE/Simple: Vehicle Id)
+		L: 02 (2)
+		V: 0159 (345)
+		------
+		T: CE (14/PRIVATE/Simple: Route Id)
+		L: 01 (1)
+		V: 04 (4)
+		------
+		T: CF (15/PRIVATE/Simple: Seat Number)
+		L: 02 (2)
+		V: 3344 (3D)
+		------
+		T: D0 (16/PRIVATE/Simple: Seat Class)
+		L: 03 (3)
+		V: 45434F (ECO)
+		------
+		T: D1 (17/PRIVATE/Simple: Max Authorized Amount)
+		L: 02 (2)
+		V: 0BB8 (PHP 30.00)
+		------
+		T: D2 (18/PRIVATE/Simple: Signature Key Identifier)
+		L: 0C (12)
+		V: 535441472D414650492D5632 (STAG-AFPI-V2)
+		------
+		T: D3 (19/PRIVATE/Simple: Terminal Identifier)
+		L: 0A (10)
+		V: 31323334353637383930 (1234567890)
+		------
+		T: DE (30/PRIVATE/Simple: Signature)
+		L: 39 (57)
+		V: 
+			00   02 30 36 02 19 00 AC 4C 9F 2E 45 E8 D8 11 FC AF    .06....L..E.....
+			01   3D 36 04 9F 4B BE 44 0A 8C B1 F0 9B 52 32 02 19    =6..K.D.....R2..
+			02   00 88 E1 1B 9C 6C B5 83 30 F5 6F 4B F8 C3 0B E2    .....l..0.oK....
+			03   C3 81 03 77 2C 26 46 A7 2A                         ...w,&F.*
+				(Version: 2, SHA1withECDSA)
+		------
+
+....
+// end::tlv[]
+
+=== Ticket Data - Hex (Bytes: 192, Characters: 384)
+This is the complete data of the ticket, including the signature.
+
+// tag::ticket-data[]
+....
+850543505630316181B64F065143415430316381ABC103131388C2020113C3045D78DCB6C4020384C50105C60117C60138C7045D78DCB6C8045D78DCD4C90101CA1031323334353637383930313233343536CB0117CC0111CD020159CE0104CF023344D00345434FD1020BB8D20C535441472D414650492D5632D30A31323334353637383930DE3802303502190096802C8BCF005E5BE60A2A3A7496EC880994BD196F13C26D02183647B4EDB64783A0AFED75A14B6DFD6B208BC61F440C6F80
+....
+// end::hticket-data[]
+
+=== Signature Input Data - Hex (Bytes: 113, Characters: 226)
+
+This is the data that forms the raw data input for the calculation of the signature.
+
+// tag::signature-data[]
+....
+C103131388C2020113C3045D78DCB6C4020384C50105C60117C60138C7045D78DCB6C8045D78DCD4C90101CA1031323334353637383930313233343536CB0117CC0111CD020159CE0104CF023344D00345434FD1020BB8D20C535441472D414650492D5632D30A31323334353637383930
+....
+// end::signature-data[]
+
+=== Signature - Hex (Bytes56, Characters: 112)
+
+This is the signature, that is added to the QR code payload data as last TLV in the Transparent AApplication Template.
+
+// tag::signature[]
+....
+02303502184816FFED6B4DEB5F2D6E994EC493C1C7164882C8B00AEF440219009CF8DF0CFE9284E7298917AB8068FE3F4CD57C4256626403
+....
+// end::signature[]
+
+=== BASE64 (Characters: 256)
+This is the complete data of the ticket, including the signature, encoded with Base64.
+
+....
+hQVDUFYwMWGBtk8GUUNBVDAxY4GrwQMTE4jCAgETwwRdeNy2xAIDhMUBBcYBF8YBOMcEXXjctsgEXXjc1MkBAcoQMTIzNDU2Nzg5MDEyMzQ1NssBF8wBEc0CAVnOAQTPAjNE0ANFQ0/RAgu40gxTVEFHLUFGUEktVjLTCjEyMzQ1Njc4OTDeOAIwNQIZAJaALIvPAF5b5goqOnSW7IgJlL0ZbxPCbQIYNke07bZHg6Cv7XWhS239ayCLxh9EDG+A
+....
+
+
+=== QR Codes
+
+The following QR code pictures are generated with margin 0, correction level M and the minimum
+QR code version required to fit the data.  The number of pixels is the minimum pixel width and height,
+but note that the actual QR code image may have more pixels if it does not fit in the minimum
+pixel width and height.
+
+==== 400 pixels
+
+ifdef::backend-pdf[]
+
+image::max-qr-400.png[]
+
+endif::[]
+
+ifndef::backend-pdf[]
+
+
+image::data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAABHNCSVQICAgIfAhkiAAADxBJREFUeJzt3c1uY80NBNBxkPd/ZWcRZKd2wELzI9tzznIgXMlXP4XGFMiv7+/v7z8AUPSv6RcAwJsECAARAQJARIAAEPn3p3/8+vr6p19HpPr//7f+ru7ewel1np536vEnU897y7bPlev/M9e/9bxTn59un/4uJxAAIgIEgIgAASAiQACICBAAIh9bWCdTU09eaSncamXcapvcevxU66zqlfbLtpbatmlG2+7PSXc764XfWycQACICBICIAAEgIkAAiAgQACKlFtbJ622Q7hbHVLvplRlTt2ZtVXW3tra1m066v7/bWlInp9cz9f092fR76wQCQESAABARIABEBAgAEQECQORKC+t129ogt7zeIjv5rRsYq7qv071xr3tGXPf1t30vJjiBABARIABEBAgAEQECQESAABD5q1pYU7Onuk3NdNo2U6uqu6VW9Vvv81RL7aT6vFOtsxc4gQAQESAARAQIABEBAkBEgAAQudLC2tYu2LSx68+ffbOAtrVrqu/Xb31/X9l42P3+Vp/3llv3/7e2PT9xAgEgIkAAiAgQACICBICIAAEgUmphTc3kuaW7BbSt1XPr+lOzfba1vLbd/+7r/9b399brOZlq5U1wAgEgIkAAiAgQACICBICIAAEg8vW9abDKkO7WxLb2S9Ur92dqltTUbK6p96V6naqpzYw2D9Y5gQAQESAARAQIABEBAkBEgAAQ+TgLa1vr5mRbG6dqW8ul+vju+/z6hrvq6+/+u7a1jLbNwur2G1uaTiAARAQIABEBAkBEgAAQESAAREqzsLZtCjvpbge9MtPphRbHnz9zGwCrXtk4+YrX78PU69/UVnUCASAiQACICBAAIgIEgIgAASBypYV1y1SbSAvo7vO+shlwqi0zdT9t9PvZ6+3Hid8ZJxAAIgIEgIgAASAiQACICBAAIq2zsKrXOfmts6q6bXudf9v7XvXK825rH3XbNtNv0++tEwgAEQECQESAABARIABEBAgAkX9/+sfu//2vtji2zfC51ZaZaq1MtX1u6W5PbWtn3dJ9f6q23bdX2mLd963y+XcCASAiQACICBAAIgIEgIgAASDysYW1rY3wygyrbTOFptpcJ9s2S3a/nm3352TbzLHu562a+rumXk+FEwgAEQECQESAABARIABEBAgAkSuzsLpbQ6/M6nll8+BJdxuq+vjT63mlvTPlldlxJ1Ptylufw9c3M5qFBUA7AQJARIAAEBEgAEQECACRr+8P/7W+babQybYZMq/M6qle5+S3zraaajFNtb9+Yzvop8d3m/r8T3ACASAiQACICBAAIgIEgIgAASDysYVVvsgj7Zdu21pqJ9vaWa+04KbaPts2cm5rG574XGUq98cJBICIAAEgIkAAiAgQACICBIBIaSPhlFdaKN3XqZqaRda9sa6quwXn9WfXn/r+nrxynze17JxAAIgIEAAiAgSAiAABICJAAIh8bGFVdc+82tZW2jYb6vT4W/dtavNgVffn8JVNc7e+X9vaWd3XuWVTSyp53gonEAAiAgSAiAABICJAAIgIEAAiV1pYUy2abbrbZVMb1qqm2iZVr7S2TrpbRn/bptGpz8MrbclPnEAAiAgQACICBICIAAEgIkAAiHxsYU3NYOluc3XPqJlq3bwy06m7bXIy1fJ6xdT3d9sMq5NX2o8Tn3MnEAAiAgSAiAABICJAAIgIEAAiX9+F/4qfmo3z+oyaqed9vW31ehvqlc85b5n6fft0HScQACICBICIAAEgIkAAiAgQACIfZ2FNzQjqnlXVPUvq1n2bmkV2y7b2V/fnqmrb+zW1ofKVFt+2WXPdz1u5jhMIABEBAkBEgAAQESAARAQIAJGPs7Be2cBVfd5u2+7PK7PLbpn6e2/5rTPZqs970t3Ku2XTrKrkOpXrO4EAEBEgAEQECAARAQJARIAAEPk4C2tba2VbG6RqaqbTxGycP3/6Zxn91tlKr8zyuuWVGVNV22adndy4n04gAEQECAARAQJARIAAEBEgAERKGwmrpmZDVV//1Myck22b4KY2UVZt+/xMufX+btusd+v1b/ucT7XvblzHCQSAiAABICJAAIgIEAAiAgSAyJVZWN262xe32AD4X9X7f+u+vdBa+ek6r8xGe+V+Vk29v7dez0Qb0AkEgIgAASAiQACICBAAIgIEgEhpFlZ3m+KVTYhTM76q13/FrbZV9fGvt4BemelU9fosvqkW6MTvpxMIABEBAkBEgAAQESAARAQIAJGPLayq7tlHr7cXultG22Zwbduw9srGuldMfX+3fS+2zcKquvF+OYEAEBEgAEQECAARAQJARIAAECltJLzVcjmZ2tRWtW0W1raNhLceXzV1H7a1cbZttOy+/m/9flVN/L45gQAQESAARAQIABEBAkBEgAAQ+fou/Jf7KzNeTqbaMttaW1VTrZ5tGwOrtn0vtt2fqle+j6/fz8rf6wQCQESAABARIABEBAgAEQECQKS0kbC7xdTd3pnaLHbySmure+PklG2ft222zbC61W6ael+2tRNvcAIBICJAAIgIEAAiAgSAiAABIFJqYZ1sa2t0X7+7PbJtBlR14+StVtKt61dNtQpvvY9Tn9u/7f7csq3FWuEEAkBEgAAQESAARAQIABEBAkDkYwtr06yVf+L6J1OtlVutran7tq2dVfX6zKJtG/ReeV+m2lmv/L594gQCQESAABARIABEBAgAEQECQOTKLKxbutsgJ1Ob+6rX2WZbe2dqdlbVVBuqaup78cr9qdr2fbnBCQSAiAABICJAAIgIEAAiAgSASKmFtW0j2NRmwG0zrLrbF7+1pdY9+2jqfbnVOptqSW3bnFi1bbbVyY3X6QQCQESAABARIABEBAgAEQECQOTKLKzudsq2jXvb2mInr88UmtoQV3Xr89zt1vd06vPffZ1XbGqdOYEAEBEgAEQECAARAQJARIAAEPn6LvwX/bY20Ul3S6T6vLdM3Yep11O9zi3bZrW90kY7mZqVV3093Z/DV/6uCicQACICBICIAAEgIkAAiAgQACJXWlgnt/73f9Pslz9/tGv+R5vl58efvDKj7JXZbq94veX46TpOIABEBAgAEQECQESAABARIABEPm4k3NZmmWqt3LoPr2zK677P3e2yF2YH3fR6G+1k2/Vfad9NfP6dQACICBAAIgIEgIgAASAiQACIfGxhdau2DrbNCKraNsvr5JVZZyfd7bipNtpU22fqOtvaX93X2TYbzSwsANoJEAAiAgSAiAABICJAAIh8bGF1t4C2tXdOXrkPt3TP0nlhw9pPj79l2+e/u21VNTWT7aT7/epubXXOTHMCASAiQACICBAAIgIEgIgAASDy9V34L/epDW7bNsdtez0n29pEUxsqt7Vott2HVx5/8rd97066Z7uZhQXANQIEgIgAASAiQACICBAAIh9bWN0bx6ZaWydTm+m22dZqu+X12VPbNtZpPf3XtllqE203JxAAIgIEgIgAASAiQACICBAAIh83Ek7Z1saZmsW0bdZQdytvSndLcNt9mNr093rLcer7XjXxeXMCASAiQACICBAAIgIEgIgAASDysYW1bdZNd6thagbR1Aa9blMb5bbNIOq+TvX61cdv2wzY3WasutXO2vZ5qDyvEwgAEQECQESAABARIABEBAgAkY8trG0b/W61GqZMzZ66ZWqWV9Xr7aOpTZ3d7aBXZrJt+92omvgeOYEAEBEgAEQECAARAQJARIAAECnNwppqX3TPSupu72yb4VN93m5TG9xen2HVbVvraWrG3bbfh+7nrTzeCQSAiAABICJAAIgIEAAiAgSAyMcWVlX3rKptraTuv+vW6+k21Z7qft5brZuT7rbb1Cyyk22tzqm24ckrm0M/cQIBICJAAIgIEAAiAgSAiAABIPL1XaiQbGsBTXllZtQtUxsqt81SO5magbZtc2j3LKbu563a9n6dmIUFwDoCBICIAAEgIkAAiAgQACIfZ2FNzeqpemUG1C1TM46mZhBt2xh4y9Tmu+rr6TY1o+yV359tn5NPnEAAiAgQACICBICIAAEgIkAAiHxsYXXPYDnZtqlw2ybEqu7ZRN1tkFv3eeo+/NbP5+vtplvPu20W2QQnEAAiAgSAiAABICJAAIgIEAAipVlYt1o3VbfaCNtaMd2zraZaQ6/PVpqaBbdtlte2+3My9btUvX71fd/WHvzECQSAiAABICJAAIgIEAAiAgSAyMgsrKmNWq/MODqZmlV1sq219cr9f73F1H2dTS2jn66zbSPhxCZKJxAAIgIEgIgAASAiQACICBAAIh9bWFXds6pOptpZ3aZaNCfb7sPrbbqTqVlt3W26qftZtW2z5AucQACICBAAIgIEgIgAASAiQACIXNlI2N2GumVqE9+tWTo2Ev58/anNdN2tsL9tVtjU876++fSk8+91AgEgIkAAiAgQACICBICIAAEgUtpI+Fs3AE61Mqpen9Uz1Tqbsm3G2kl3W3LbhtNt7axbJn4fnEAAiAgQACICBICIAAEgIkAAiHx9v7IurOA3th1+uv4t22Zkbbv+rec92fb3bvs8/22vv/q8E58fJxAAIgIEgIgAASAiQACICBAAIqWNhNt0b/qbmuU1NfPnZFvrrLs4OHXfqrZtGKxeZ2oz48nU7962TaCV53UCASAiQACICBAAIgIEgIgAASDysYV1MjU2q3sz3Sub4062tTi2bWD8rTOLXhljN/V56L7+ts/bxO+YEwgAEQECQESAABARIABEBAgAkY8bCbtbByevzFx6fUbTpo1miVfacbds+95Vr3Py+vv4Snuz8/11AgEgIkAAiAgQACICBICIAAEgUpqF9YrumU7b2lbVx29rbW3b9Fd93pNtbcYpv/XvOtnWRjMLC4B1BAgAEQECQESAABARIABEfmULa6qlc2t20K1WUtXUjKzuttvr7Z1ts9pe2Uxa1T0TrPs6ExsVnUAAiAgQACICBICIAAEgIkAAiFzZSNjt9ZlU3SbaFz9d52TbTK1ttm3edP2fr//K96Xz+k4gAEQECAARAQJARIAAEBEgAERKLaxtXmkfVf1tG9ymZnBVbWv7bLs/J1ObHN2f/us4gQAQESAARAQIABEBAkBEgAAQ+djCAoD/xwkEgIgAASAiQACICBAAIv8Bk2f8coaF7A8AAAAASUVORK5CYII=[QR Image 400]
+
+endif::[]
+
+==== 200 pixels
+
+ifdef::backend-pdf[]
+
+image::max-qr-200.png[]
+
+endif::[]
+
+ifndef::backend-pdf[]
+
+
+image::data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAABHNCSVQICAgIfAhkiAAACfNJREFUeJzt3dGO4zgMRNHtxfz/L/c+bUMDhGUyrLLTwD1Pg0CW3UkEcSSK+fr+/v7+B8BL/z79AMAn+/P/P76+vuydV5NT517Tie3s87x283r1PNNrO1zv1W9s37l28/5MnfdiBgEEBggg/Hn14ub/7YkprzPVdqb1zuub0K6SCA9cIZ9rjSYRgk7DrcT3lhkEEBgggPAyxDqlp+npFLwJhxIrTp1Vr04/p02fU9PP1xUyVc+w+XyrPqfPc2IGAQQGCCBchlhprmnada/EFJ/eoKxM20w35qYritP2rs9igxkEEBgggPBIiLVZfXLdaxrSuO7beYZpmzufeRPynaprN6FdAjMIIDBAAOEyxHJNZ66NG9cqiiucmOZ9Vf1XNinf6VW4zrXTe52mn1d17QYzCCAwQADhZYiVSFk/TUMUVyjSaZ/I9brz7532/9Tf2+nn9NTpQmYQQGCAAMLX02V/Nvk/ic2jxPNsVplcJxZdbTrPkEiDJxcL+EAMEEB4WRdrE1qcXGFGJVF3a/PM6Q21Tlp4516ukCZdK6xyZ8jNDAIIDBBAeLmKlaizNA1XPuFEXsdmg6+S2BhNSD9Dol7Z9DvDDAIIDBBAuAyxOjZhzCeEKJ1rE5t9rlN403t92kZeOjzefGeYQQCBAQIIo1Wsqs3pE/KXKolQp9OP62+vJK5Nr/5V7sw96/TJDAIIDBBAsOdiuVZIEqfwpv1vJE78ubiKTrieLb3JOG3PRiHQxAABhJ8QyzXNJVaoXCstrtpKTxWISGzYJU5xJgo4uDZGp+8PMwggMEAA4XIVaxq6JFZFEpuD0/6nq0+J8GMjsbpY9e86hnDnZiWrWMAbGCCA8JOLlcjDca0wJFZFqjad+1ZcKz8drvDsznAl/ZwUbQBuxgABhMvSo4nwYCqxmpFOWZ9eWz1DOn3ddW3Vz+nT3quqnxMzCCAwQADh5UbhRmKKn7bpPFtHIr/LlX/1VP+JXLvEM7tCSmYQQGCAAMLbPwO9ybnq9J8ogDDNB9vkaJ1cBQSqaxO5ZB1PrTKlV+FOzCCAwAABhMsQy5UuvjEN5zYbUtNnSJ8Q7LSvuAoXbPrscJ0WrHCiEAhhgADCy6INm5pOlc5JsU77js7KlSt9vXNtdd/0KbmOzeebOBGZCI837zkzCCAwQADhkeruVfv0qbp0WPXUal56New3cuX7MYMAAgMEEEbV3SubPBnXak8iD6fqv7LJE5vey/V3JQpTVFwbsolrOVEIvIEBAgiXdbH+ahyokdWRrltVtek8Q0c6x+nOlcDq2tOmwEXlzlOorGIBTQwQQLj8AZ1NynSHqyiBa1rfvA/pulLV8yRWyToSK06VRN4XuVjAEgMEEEZ1sVwlJafXdiQ28tL3rdp0Xp/q/L3pk5WJ9zxde40ZBBAYIIBg/xno6fS66bNqc0ps8HVWkKpnSGx4JVbz7tyYc+XjJcJUZhBAYIAAwuhnoE+d1Y90KJXYkJrqhFXV6+kQJX2EofMMVZ/VtZv3bXPfCjMIIDBAAGFU3X2T/9Pp/zRdlUpsYiY2pBIbZwmJXLJNCJ04MtD5u5hBAIEBAgij0qOuaTE9TXf66XBtPLlyzBKbZYncs+q+6c+r8wzT+zKDAAIDBBDspUc7NmFDoqBE1c8pnb/UcefqzUZ6Fcul8z1kBgEEBgggvNwonIZAiSIDiZN601WUaVr7lOt9c0kU0Jhe2+EKdzuYQQCBAQIIo1ysDleYNJ2+E2Unp+FWp31lE8omTiNO75t4ng7XfwEqzCCAwAABhMu6WOlcnVOixlGi7tYm3Or0X3FtYroKaFQSofXmXtNnODGDAAIDBBAuV7E6EvlFVZtE/auKK/zYrG5VEnlKm88inTd1SoSFFWYQQGCAAMIoF6vTxrXZ51qhSpz+c4V8TxUlcL3/m2ufWh2d9skMAggMEEB4OxcrvTGXLgTx1Am1KVfhiFPnM928/9M2CaS7AzdggADCqGhDop7VnStRrpWWO1ecEq9vuNLXN+9h4l4VZhBAYIAAwmWIdbrzsPynhRNPhQHpWludPhOp+xvpkPhswwwCCAwQQLj8jcJTYvOu0/8pnZOTqOmUWF3pSId5nXttni1RiOPEiUJgiQECCG+fKEzkCG3u+1Q69GaK32wyJsKSTZv0qtemBlcHq1jAGxgggPDyNwo7XOHHtM9N+2k/nZpXnfadNon3yrX65Dpl2Xm2TU2tzvNMV/aYQQCBAQIIb/9GYdlh+EThxp1p85s8sfSmbfr101OfXecZOs/MDAIIDBBA+AmxXGnb5Y0WKcppiU3Gzb3SuUwdnxYapU9oVtcygwACAwQQHqnuni7ssJle7zzBt0mbvzN0SRSpqCQKemzeN2YQQGCAAMLbuViV6VS4WYHZbMBNpVPiqz7Tp+oSm32uE5SdcCtxuvDEDAIIDBBAePtnoKchU3rj6anw4BPCG1e+nCu0S286T20+I2YQQGCAAMLLVSzXof6K60TYtM/O80y5Ci9UfbqKHnS4QqPNiqXr+zC9lqINwBsYIIBwmYuVKFyQuJfrGU6u/J/OtZ3QYvoMVftEGvm0TSKfLXEtMwggMEAAwV60weWp03CbDdNEXlOi1tYm/Nvcy1W8IrGCyioW8AYGCCBc5mJV0htYiZpartNnv+U0Yno1abMil/j+uN6TEzMIIDBAAGF0otC1wtPpP5FPtcnJmfaTeIY7388788Fcm6qu8PXEDAIIDBBAGP0MtKtAQWLDaLpik6i/VEmsbrlyqxLPU/XZeb2yKeCw+c4wgwACAwQQ3l7FchUicK3YTPuv2p9coVfi+dMh0LSNK6TpHHPYPEPVvsIMAggMEEAYnSictnGdPutIpJdvniEdRnbu22mfLojR4doMTWAGAQQGCCBcbhQmTsm5al7dWZfJtZF3SuRuPbWqtrk2vbnceZ4KMwggMEAAwVJ6NDEFV1xp7a7+O9e6VlrSJxOre3Ver/p0FZqoru3YfB+YQQCBAQIIL+tiRW5047SYvlei3lQlEfIlToB+Qv/Te3X6ZwYBBAYIILxdF6tjuqmXLmiQLsjgKjqxOUpQte/YpKNPNytPify3af/VtcwggMAAAYSX6e6u1OvO64nNr+q+mynYtUF558pMYoFy8z5M27vet813jBkEEBgggPCzUbjJjUms/KRXhBIbgp1r01yfXdXmlP4bE+H39O9lBgEEBgggXBZtcEmcGutcuzmNmNhw7EikiLtWtO68V6fP9KYkMwggMEAA4bYQaxNybMpUplOjNycoXdInPadcxw1cbTYbkcwggMAAAYTLjcJxh+GVqKlEns8n5ERt7vVb2t95YpF0d+ANDBBAeBliuaTTmE9PbWC50ulP6Rw2V8j6G59n2oYZBBAYIIBwW10s4DdiBgEEBggg/AcocvriO67V0gAAAABJRU5ErkJggg==[QR Image 200]
+
+endif::[]
+
+==== 150 pixels
+
+ifdef::backend-pdf[]
+
+image::max-qr-150.png[]
+
+endif::[]
+
+ifndef::backend-pdf[]
+
+
+image::data:image/png;base64,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[QR Image 150]
+
+endif::[]
