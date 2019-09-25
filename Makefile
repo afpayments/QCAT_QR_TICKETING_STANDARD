@@ -43,6 +43,7 @@ externalhtml: $(externalhtmls)
 
 externalzip: qr-code-ticketing-standard-external.zip
 internalzip: qr-code-ticketing-standard-internal.zip
+releasezip: qr-code-ticketing-standard-release.zip
 
 build/internal/%-internal.pdf: %.adoc
 	asciidoctor-pdf -a internal  -a pdf-stylesdir=styles -a pdf-style=log -a imagesdir=./images/ -o build/internal/$*-internal.pdf $<
@@ -68,12 +69,20 @@ build/samples/%.html:	samples/%.adoc
 
 
 %-external.zip: $(externalpdfs) $(externalhtmls)
-	zip -r build/external/$@ $(externalpdfs) $(externalhtmls) images/ -x \*/.DS_Store
-	# rm -f $(externalpdfs) $(externalhtmls)
+	rm -f build/external/*.zip
+	cp -r images build/external
+	zip -r build/external/$@ $(externalpdfs) $(externalhtmls) build/external/images -x \*/.DS_Store
 
 %-internal.zip: $(internalpdfs) $(internalhtmls)
-	zip -r build/internal/$@ $(internalpdfs) $(internalhtmls) images/ -x \*/.DS_Store
-	# rm -f $(internalpdfs) $(internalhtmls)
+	rm -f build/internal/*.zip
+	cp -r images build/internal
+	zip -r build/internal/$@ $(internalpdfs) $(internalhtmls) build/internal/images -x \*/.DS_Store
+
+%-release.zip: $(externalpdfs) $(externalhtmls)
+	rm -f build/external/*.zip
+	cp -r images build/external
+	zip -r build/external/$@ $(externalpdfs) $(externalhtmls) build/external/images -x \*/.DS_Store
+
 
 test:
 	echo $(com)
