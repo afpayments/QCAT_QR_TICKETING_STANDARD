@@ -1,0 +1,21 @@
+# Contributing to QCAT
+:toc: left
+
+
+## Asking Questions
+Questions can be asked by sending and email to AFPI.
+
+Questions that may be of common interest or that may be answered by other contributors or followers of the repository can be added as "issue" and tagged with "Question".
+
+CAUTION: Do not include any confidential or personal information into the repository including any issue you may create!
+
+## Suggesting Changes
+Changes can be suggested by creating a new issue and tagging it with "Enhancement".
+
+In case, you have a specific change in mind, you can also fork the repository, create a branch off of the master branch and send a Pull Request to this repository.
+
+## Downloading the Documents
+
+The standards are written in AsciiDoc format.
+
+The easiest way to get a PDF or HTML version is to download the latest release from the release tab.
