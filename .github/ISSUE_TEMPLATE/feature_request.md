@@ -1,9 +1,9 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+name: Enhancement request
+about: Suggest an idea for improving the documents in this repository
+title: 'ENHANCEMENT: '
+labels: 'enhancement'
+assignees: 'ingonoka'
 
 ---
 
