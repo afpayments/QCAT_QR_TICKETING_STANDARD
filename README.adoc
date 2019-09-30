@@ -1,6 +1,9 @@
 # QCAT TICKETING_STANDARD
 :toc: left
 
+The QCAT standard and the associated documents define technical, operational and commercial specifications and rules for an interoperable ticketing system using QR Tickets.
+In addition to studying the standard, you can also participate by making comments, asking questions or contributing improvements.  For more guidance how to contribute link:CONTRIBUTING.adoc[see CONTRIBUTING]
+
 ## What is the QCAT Standard?
 The QCAT standard is a set of specification and documents that define a QR code based ticketing system for automated fare collection in public transport.
 
