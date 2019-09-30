@@ -3,7 +3,7 @@
 
 image::images/readme.jpg[]
 The QCAT standard and the associated documents define technical, operational and commercial specifications and rules for an interoperable ticketing system using QR Tickets.
-In addition to studying the standard, you can participate by making comments, asking questions or contributing improvements.  For more guidance how to contribute link:CONTRIBUTING.adoc[see CONTRIBUTING]
+In addition to studying the standard, you can participate by making comments, asking questions or contributing improvements.  For more guidance how to contribute link:CONTRIBUTING.adoc[see Contribution Guidelines] and link:CODE_OF_CONDUCT.md[Code of Conduct]
 
 toc::[]
 

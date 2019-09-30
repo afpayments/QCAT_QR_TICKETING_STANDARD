@@ -14,6 +14,9 @@ Changes can be suggested by creating a new issue and tagging it with "Enhancemen
 
 In case, you have a specific change in mind, you can also fork the repository, create a branch off of the master branch and send a Pull Request to this repository.
 
+## Report a Bug
+Bugs can be reported by creating a new issue and tagging it with "Bug".
+
 ## Downloading the Documents
 
 The standards are written in AsciiDoc format.
