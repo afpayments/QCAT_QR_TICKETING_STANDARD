@@ -451,7 +451,7 @@ And a length of `500` is encoded as
 . The QR code may contain further Application Templates, which are outside the scope of this specification.  The EMV standard size limitation applies to the total of all the data in the QR code.
 
 .Sample of a valid TLV structure of a QCAT ticket
-include::samples/qr-samples-max.adoc[tags=tlv]
+include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
 
 === QR Code Fields
@@ -489,9 +489,9 @@ The ticket creator is the organization that is authorized to create tickets and 
 |Unsigned Integer,  +
 16 bit
 |N/A |
-include::samples/tlv-list-max.adoc[tags=C2-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C2-value]
 |
-include::samples/tlv-list-max.adoc[tags=C2]
+include::{includedir}samples/tlv-list-max.adoc[tags=C2]
 |====
 
 // --------------------------------------------------------------------------------
@@ -505,10 +505,10 @@ Time at which the ticket was created.  The ticket validity and QR refreshment pe
 | 3 |Timestamp
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=C3-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C3-value]
 // `2019-04-06T17:12:53+08:00` => `1538028205` => *`5CA86D95`*
 |
-include::samples/tlv-list-max.adoc[tags=C3]
+include::{includedir}samples/tlv-list-max.adoc[tags=C3]
 |====
 
 // --------------------------------------------------------------------------------
@@ -524,10 +524,10 @@ Time period in seconds from the time of ticket creation after which the ticket i
 32 bit
 |15m => 900s => *`0x0384`*
 |
-include::samples/tlv-list-max.adoc[tags=C4-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C4-value]
 // 24h => 86,400s => *`015180`*
 |
-include::samples/tlv-list-max.adoc[tags=C4]
+include::{includedir}samples/tlv-list-max.adoc[tags=C4]
 
 |====
 
@@ -545,10 +545,10 @@ Identifies the public transport domain in which the ticket is valid. Ticket Vali
 16 bit
 |`0` (All)
 |
-include::samples/tlv-list-max.adoc[tags=C5-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C5-value]
 // `1` (Rail only)
 |
-include::samples/tlv-list-max.adoc[tags=C5]
+include::{includedir}samples/tlv-list-max.adoc[tags=C5]
 
 |====
 // --------------------------------------------------------------------------------
@@ -564,10 +564,10 @@ The identifier of transport operator for which the ticket is valid. There could 
 32 bit
 | all operators
 |
-include::samples/tlv-list-max.adoc[tags=C6-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C6-value]
 // 4,095 => *`FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=C6]
+include::{includedir}samples/tlv-list-max.adoc[tags=C6]
 
 |====
 // --------------------------------------------------------------------------------
@@ -582,10 +582,10 @@ Time after which the ticket is valid. Default is the ticket creation time.
 |Timestamp
 | 0 (Immediate)
 |
-include::samples/tlv-list-max.adoc[tags=C7-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C7-value]
 // Ticket is valid from Monday, 28 2019 at 6 am => the equivalent UTC time is "Sun Jan 27 22:00:00 UTC 2019" => `1548626400` => *`5C4E29E0`*
 |
-include::samples/tlv-list-max.adoc[tags=C7]
+include::{includedir}samples/tlv-list-max.adoc[tags=C7]
 
 |====
 
@@ -601,10 +601,10 @@ Time after which the ticket need to be refreshed with a new refresh time and sig
 |Timestamp
 |0 (static)
 |
-include::samples/tlv-list-max.adoc[tags=C8-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C8-value]
 // Ticket will not be accepted unless refreshed with a new refresh time after Monday, 28 2019 at 06:00:30 am => the equivalent UTC time is "Sun Jan 27 22:00:30 UTC 2019" => `1548626430` => *`5C4E29FE`*
 |
-include::samples/tlv-list-max.adoc[tags=C8]
+include::{includedir}samples/tlv-list-max.adoc[tags=C8]
 
 
 |====
@@ -621,10 +621,10 @@ Indicates a special processing rule that will be applied when calculating the fa
 16 bit
 |1 (Standard)
 |
-include::samples/tlv-list-max.adoc[tags=C9-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C9-value]
 // 2 (Senior Citizen)
 |
-include::samples/tlv-list-max.adoc[tags=C9]
+include::{includedir}samples/tlv-list-max.adoc[tags=C9]
 
 |====
 
@@ -641,10 +641,10 @@ The account identifier provides information about the passenger's account with t
 Excl. Control Characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CA-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CA-value]
 // id "A-4095" => *`0x41 0x2d 0x34 0x30 0x39 0x35`*
 |
-include::samples/tlv-list-max.adoc[tags=CA]
+include::{includedir}samples/tlv-list-max.adoc[tags=CA]
 
 |====
 
@@ -661,10 +661,10 @@ The identifier of the boarding station or stop for which the ticket is valid.
 32 bit
 | Any boarding station
 |
-include::samples/tlv-list-max.adoc[tags=CB-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CB-value]
 // 1
 |
-include::samples/tlv-list-max.adoc[tags=CB]
+include::{includedir}samples/tlv-list-max.adoc[tags=CB]
 
 |====
 // --------------------------------------------------------------------------------
@@ -681,10 +681,10 @@ The identifier of the destination station or stop to which the ticket is valid.
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CC-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CC-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CC]
+include::{includedir}samples/tlv-list-max.adoc[tags=CC]
 
 |====
 
@@ -702,10 +702,10 @@ The identifier of the vehicle for which the ticket is valid (e.g bus number).
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CD-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CD-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CD]
+include::{includedir}samples/tlv-list-max.adoc[tags=CD]
 
 |====
 
@@ -723,10 +723,10 @@ The id of the route for which the ticket is valid (e.g bus number).
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CE-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CE-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CE]
+include::{includedir}samples/tlv-list-max.adoc[tags=CE]
 
 |====
 
@@ -742,10 +742,10 @@ The identifier for a particular seat that has been reserved for the passenger pr
 | ASCII max 5 characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CF-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CF-value]
 // "3D"
 |
-include::samples/tlv-list-max.adoc[tags=CF]
+include::{includedir}samples/tlv-list-max.adoc[tags=CF]
 
 |====
 // --------------------------------------------------------------------------------
@@ -760,10 +760,10 @@ The identifier for a particular seat class.  The format and meaning is operator 
 | ASCII, max 5 characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=D0-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D0-value]
 // "ECOP" Economy Premium, "BUS" Business Class
 |
-include::samples/tlv-list-max.adoc[tags=D0]
+include::{includedir}samples/tlv-list-max.adoc[tags=D0]
 
 |====
 // --------------------------------------------------------------------------------
@@ -779,10 +779,10 @@ Amount in Centavos.  If the fare amount is known when the passenger starts the t
 32 bit
 | 0 (Unlimited)
 |
-include::samples/tlv-list-max.adoc[tags=D1-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D1-value]
 // 2000 (PHP 20)
 |
-include::samples/tlv-list-max.adoc[tags=D1]
+include::{includedir}samples/tlv-list-max.adoc[tags=D1]
 
 |====
 // --------------------------------------------------------------------------------
@@ -797,10 +797,10 @@ The key identifier is used to distinguish multiple public key certificates assig
 | ASCII `[0-9a-zA-Z_-]`
 | Use first matching public key for Creator Id
 |
-include::samples/tlv-list-max.adoc[tags=D2-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D2-value]
 // BPI BACKEND
 |
-include::samples/tlv-list-max.adoc[tags=D2]
+include::{includedir}samples/tlv-list-max.adoc[tags=D2]
 
 |====
 // --------------------------------------------------------------------------------
@@ -815,10 +815,10 @@ The terminal identifier identifies the device that "produced" the QCAT ticket.  
 | ASCII `[0-9a-zA-Z_-]`
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=D3-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D3-value]
 // `1352701060268304`
 |
-include::samples/tlv-list-max.adoc[tags=D3]
+include::{includedir}samples/tlv-list-max.adoc[tags=D3]
 
 |====
 // --------------------------------------------------------------------------------
@@ -833,10 +833,10 @@ The signature proves that the the QR code was indeed created by the QCAT Ticket 
 | binary
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=DE-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=DE-value]
 // 0x01 ...
 |
-include::samples/tlv-list-max.adoc[tags=DE]
+include::{includedir}samples/tlv-list-max.adoc[tags=DE]
 
 |====
 
@@ -935,7 +935,7 @@ The signature creation is performed over the raw bytes of the BER encoded data, 
 
 For example, given the above TLV structure of a ticket the signature would be generated over the following data (bytes in hex):
 
-include::samples/qr-samples-max.adoc[tags=signature-data]
+include::{includedir}samples/qr-samples-max.adoc[tags=signature-data]
 
 
 ==== Signature Validation
