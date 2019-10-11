@@ -6,7 +6,7 @@ endif::[]
 = QR Code Standard for Transport Ticketing - Risk Management
 :author: AF Payments, Ingo Noka
 :revnumber: 1.0_RC1
-:revdate: Oct 4, 2019
+:revdate: Oct 11, 2019
 :doctype: article
 :title-page:
 :encoding:  utf-8
@@ -72,7 +72,7 @@ One of the measures to limit the impact of copying QR codes is to refresh the QR
 
 The QCAT Standard defines the data field `Refresh Time`, which contains a timestamp. The QCAT Validation Terminal verifies whether the refresh time is in the past and rejects the terminal if it does.
 
-Refreshing QR codes only work if the QR code is issued and presented on the passenger's mobile phone, because if requires a phone (and potentially a backend system) to create a new QR code in regular intervals.
+Refreshing QR codes only work if the QR code is issued and presented on the passenger's mobile phone, because it requires a phone (and potentially a backend system) to create a new QR code in regular intervals.
 
 Paper-based QCAT tickets are always fixed, i.e. they should not contain a refresh time.
 
@@ -84,13 +84,13 @@ The terms "static" and "dynamic" are not used here because these terms already h
 
 == Synchronization of QCAT Validation Terminals
 
-The most effective way to prevent QR Code copying is to share the details of already validated QCAT tickets across all relevant QCAT terminals.  The QCAT Validation terminals will reject tickets that have been scanned already.
+The most effective way to prevent QR Code copying is to share the details of already validated QCAT tickets across all relevant QCAT Validation terminals.  The QCAT Validation terminals will reject tickets that have been scanned already.
 
 The challenge is to share ticket data without impacting the performance of the validation terminal or giving up the advantages of offline ticket validation.
 
 The key to a working implementation is to include data into the QCAT ticket that would limit the number of QCAT Validation terminals that accept the ticket.  At the very minimum the ticket should include the identifier of the Transport Operator who will accept the ticket.  But this is usually not enough as one transport operator may have many acceptance terminals.
 
-Therefore, the QCAT ticket should also include a departure station and possibly the destination station.  This way, only acceptance terminals in the departure and destination stations need to be synchronized, as other terminals will reject the ticket due to mismatching station ID. Note, that this requires the acceptance terminal to know at which station it is installed.  For terminal based devices this is not an issue as the station ID never changes.  For devices moving with the vehicle however, the current station ID need to be updated manually or via GPS.
+Therefore, the QCAT ticket should also include a departure station and possibly the destination station.  This way, only acceptance terminals in the departure and destination stations need to be synchronized, as other terminals will reject the ticket due to mismatching station ID. Note, that this requires the acceptance terminal to determine the station ID based on its current or actual location. For acceptance terminal on a fixed location this is not an issue as the station ID never changes, however, if it is within a moving vehicle the current station ID needs to be updated manually or via GPS.
 
 It will usually not be possible to query a centralized repository of validated tickets for every validation transaction. Instead the QCAT Acceptor Terminals should connect to each other when within the reach of a local network (e.g. LAN, WLAN or WiFi Direct).  Terminals should also send validated tickets to a centralized repository (which can be setup in a hierarchy of repositories) and receive updates from the repository in frequent intervals.
 
@@ -108,9 +108,40 @@ While it is impossible to prevent copying of QR codes, the QCAT standard uses cr
 
 For this system to work, it is imperative that the QCAT Issuer protects the cryptographic keys that are used to calculate the signature.  To mitigate the risk of key compromise, the QCAT Certificate Authority would provide a mechanism to revoke compromised key certificates.  Once the revocation has been distributed to all acceptance terminals, tickets generated with the compromised keys will no longer be accepted.
 
-QCAT acceptance terminals must have a mechanism to dynamically and remotely update the list of key certificates.  If the revoked certificate is not removed within the time frame specified by the QCAT Certificate Authority, any accepted ticket with a signature generated with the revoked key will be the liability of the QCAT Acceptor.
+QCAT acceptance terminals must have a mechanism to dynamically and remotely update the list of key certificates.  It is the responsibility of QCAT Acceptor to ensure that a revoked certificate is removed within the time frame specified by the QCAT Certificate Authority. After the specified timeframe, any accepted ticket with a signature generated with the revoked key will be the liability of the QCAT Acceptor.
 
-QCAT keys tend to be shorter than usual to reduce the length of the signature and thereby the length of the QR code data.  Key revocation may therefore happen frequently as a preemptive measure.
+QCAT cryptographic keys tend to be shorter than usual to reduce the length of the signature and thereby the length of the QR code data.  Key revocation may therefore happen frequently as a preemptive measure.
+
+== QCAT Cryptographic Signature - Best Practices
+
+The cryptographic signature has a huge influence on the size of the QR code.  The QCAT Issuer therefore has to find a balance between key strength and QR code size.
+
+Choosing signatures that create large QR codes will slow down the QR ticket validation.  Especially paper tickets with large QR codes may create problems for the acceptance terminal due to the curvature of the paper and the resulting out-of-focus edges of the QR code.
+
+To compensate for shorter keys, the QCAT issuer should switch to new keys more frequent than what is common in PKI systems.
+
+A good practice could be to generate a group of keys with public Key Certificates with overlapping expiry intervals.  The overlap should be at least one week to allow all issuing and acceptance devices/systems to be updated.
+
+Due to the expiry date of the public key certificate, the QCAT acceptance terminals will stop accepting tickets that have been created using the associated private key after the public key certificate has expired.
+
+Tickets with the new key will be accepted from the effective day of the public key certificate.
+
+QCAT Acceptance terminals must have a mechanism to download new public key certificates and certificate revocation lists.  It is good practice to ensure that the QCAT Certificate Authority root certificate is installed independently from the public key certificates.  The QCAT terminal must not accept public key certificates that are signed by other (especially other self-signed) AC root keys.
+
+QCAT Acceptance terminals must have a mechanism to ensure that non-production public key certificates are never installed and used in production terminals.
+
+Choosing the right key length is a matter for the risk management of the QCAT issuer.  Here is a possible policy that a QCAT issuer may adapt:
+
+|====
+|Feature |Low Value Ticket |High Value Ticket
+
+|Algorithm|Eliptic Curve with SHA256|RSA with SHA256
+|Key length|192 bits (curve secp192r1)|1024 bits
+|Signature length| 55 or 56 bytes| 128 bytes
+|Key expiry period|weeks|months
+|Application|paper and mobile phone|mobile phone
+|====
+
 
 == Financial Risk of Post-Paid Tickets
 
