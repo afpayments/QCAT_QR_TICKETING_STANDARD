@@ -1,0 +1,170 @@
+:internal:
+:classification-label: For External Distribution
+ifdef::internal[]
+:classification-label: For Internal Use Only
+endif::[]
+= QR Code Standard for Transport Ticketing - Risk Management
+:author: AF Payments, Ingo Noka
+:revnumber: 1.0_RC1
+:revdate: Oct 11, 2019
+:doctype: article
+:title-page:
+:encoding:  utf-8
+:lang:      en
+:toc:       left
+:toclevels: 4
+:toc-title: Table of Content
+:sectnums:
+:last-update-label:
+:nofooter!:
+:media:     print
+:icons:  font
+:pagenums:
+// Images directory
+:imagesdir: images/
+:numbered:
+:toc: left
+:xrefstyle: full
+ifdef::backend-pdf[]
+:stem: latexmath
+//:title-logo-image: image:beep_logo.png[pdfwidth=40%,width=40%,align=right]
+endif::[]
+
+ifdef::internal[]
+[WARNING]
+====
+{classification-label}
+====
+endif::[]
+
+ifndef::internal[]
+[NOTE]
+====
+{classification-label}
+====
+endif::[]
+
+ifdef::internal[]
+:!numbered:
+[discrete]
+== Revisions
+[cols="15%,15%,70%", stripes=none]
+|====
+|Author|Date|Changes
+
+.1+|Ingo Noka .1+| October 4, 2018
+| Initial Version
+|====
+
+.To Do
+****
+
+****
+
+
+endif::[]
+
+:numbered:
+
+== Fixed vs. Refreshing QR Codes
+
+One of the measures to limit the impact of copying QR codes is to refresh the QR code in regular intervals.  The refreshed QR code represents the same ticket, but it contains updated data, which can be validated by QCAT Validation Terminal.
+
+The QCAT Standard defines the data field `Refresh Time`, which contains a timestamp. The QCAT Validation Terminal verifies whether the refresh time is in the past and rejects the terminal if it does.
+
+Refreshing QR codes only work if the QR code is issued and presented on the passenger's mobile phone, because it requires a phone (and potentially a backend system) to create a new QR code in regular intervals.
+
+Paper-based QCAT tickets are always fixed, i.e. they should not contain a refresh time.
+
+The `Ticket Validity Period`` period of the QCAT ticket is not the same as the `Refresh Time`.  The validity period defines for how long after the `Effective Time` the ticket will be valid.  During the validity period the QR code may be refreshed many times, i.e. a single ticket can have many `Refresh Times`. In other words the `Refresh Time` defines the validity of the QR code while the `Ticket Validity Period` defines the validity of the ticket.
+
+The time between refreshes should not exceed 15 seconds.  The QR code should only be refreshed while the QR code is displayed and visible for scanning on the mobile phone screen.
+
+The terms "static" and "dynamic" are not used here because these terms already have a different meaning in the QR Code technology.
+
+== Synchronization of QCAT Validation Terminals
+
+The most effective way to prevent QR Code copying is to share the details of already validated QCAT tickets across all relevant QCAT Validation terminals.  The QCAT Validation terminals will reject tickets that have been scanned already.
+
+The challenge is to share ticket data without impacting the performance of the validation terminal or giving up the advantages of offline ticket validation.
+
+The key to a working implementation is to include data into the QCAT ticket that would limit the number of QCAT Validation terminals that accept the ticket.  At the very minimum the ticket should include the identifier of the Transport Operator who will accept the ticket.  But this is usually not enough as one transport operator may have many acceptance terminals.
+
+Therefore, the QCAT ticket should also include a departure station and possibly the destination station.  This way, only acceptance terminals in the departure and destination stations need to be synchronized, as other terminals will reject the ticket due to mismatching station ID. Note, that this requires the acceptance terminal to determine the station ID based on its current or actual location. For acceptance terminal on a fixed location this is not an issue as the station ID never changes, however, if it is within a moving vehicle the current station ID needs to be updated manually or via GPS.
+
+It will usually not be possible to query a centralized repository of validated tickets for every validation transaction. Instead the QCAT Acceptor Terminals should connect to each other when within the reach of a local network (e.g. LAN, WLAN or WiFi Direct).  Terminals should also send validated tickets to a centralized repository (which can be setup in a hierarchy of repositories) and receive updates from the repository in frequent intervals.
+
+To preserve the benefits of offline ticket validation, QCAT Acceptor Terminals should accept tickets unless there has been too much time since the last update from the central repository.
+
+.Hierarchy of Repositories holding Validated Ticket Data
+image::validated-ticket-repository-hierarchy.png[role="thumb"]
+
+Of course the shorter the validity period for tickets the fewer validated tickets need to be shared amongst terminals, as expired tickets can be dropped from the repository.
+
+
+== Protection against Unauthorized Ticket creation
+
+While it is impossible to prevent copying of QR codes, the QCAT standard uses cryptographic signatures to ensure that only authorized QCAT Issuers can generate valid tickets.  Changing data within a valid ticket will render the ticket invalid as the signature will not match the content of the ticket anymore.
+
+For this system to work, it is imperative that the QCAT Issuer protects the cryptographic keys that are used to calculate the signature.  To mitigate the risk of key compromise, the QCAT Certificate Authority would provide a mechanism to revoke compromised key certificates.  Once the revocation has been distributed to all acceptance terminals, tickets generated with the compromised keys will no longer be accepted.
+
+QCAT acceptance terminals must have a mechanism to dynamically and remotely update the list of key certificates.  It is the responsibility of QCAT Acceptor to ensure that a revoked certificate is removed within the time frame specified by the QCAT Certificate Authority. After the specified timeframe, any accepted ticket with a signature generated with the revoked key will be the liability of the QCAT Acceptor.
+
+QCAT cryptographic keys tend to be shorter than usual to reduce the length of the signature and thereby the length of the QR code data.  Key revocation may therefore happen frequently as a preemptive measure.
+
+== QCAT Cryptographic Signature - Best Practices
+
+The cryptographic signature has a huge influence on the size of the QR code.  The QCAT Issuer therefore has to find a balance between key strength and QR code size.
+
+Choosing signatures that create large QR codes will slow down the QR ticket validation.  Especially paper tickets with large QR codes may create problems for the acceptance terminal due to the curvature of the paper and the resulting out-of-focus edges of the QR code.
+
+To compensate for shorter keys, the QCAT issuer should switch to new keys more frequent than what is common in PKI systems.
+
+A good practice could be to generate a group of keys with public Key Certificates with overlapping expiry intervals.  The overlap should be at least one week to allow all issuing and acceptance devices/systems to be updated.
+
+Due to the expiry date of the public key certificate, the QCAT acceptance terminals will stop accepting tickets that have been created using the associated private key after the public key certificate has expired.
+
+Tickets with the new key will be accepted from the effective day of the public key certificate.
+
+QCAT Acceptance terminals must have a mechanism to download new public key certificates and certificate revocation lists.  It is good practice to ensure that the QCAT Certificate Authority root certificate is installed independently from the public key certificates.  The QCAT terminal must not accept public key certificates that are signed by other (especially other self-signed) AC root keys.
+
+QCAT Acceptance terminals must have a mechanism to ensure that non-production public key certificates are never installed and used in production terminals.
+
+Choosing the right key length is a matter for the risk management of the QCAT issuer.  Here is a possible policy that a QCAT issuer may adapt:
+
+|====
+|Feature |Low Value Ticket |High Value Ticket
+
+|Algorithm|Eliptic Curve with SHA256|RSA with SHA256
+|Key length|192 bits (curve secp192r1)|1024 bits
+|Signature length| 55 or 56 bytes| 128 bytes
+|Key expiry period|weeks|months
+|Application|paper and mobile phone|mobile phone
+|====
+
+
+== Financial Risk of Post-Paid Tickets
+
+Post-paid tickets usually carry a financial risk, as the fare amount can only be calculated on exit and deducted from the passenger's funding source after the passenger has left the vehicle or station.
+
+Post-paid tickets only make sense as mobile-phone based refreshing tickets.  The post-paid ticket must contain the `Account Identifier` data field, which allows the ticket issuer to link ticket and customer account for settlement.
+
+Post-paid tickets can also contain the "Maximum Authorized Amount" data field.  This field is used to indicate the maximum amount the issuer is willing to risk or the amount the issuer has earmarked in the account of the passenger.  The ticket acceptance terminal should check that the maximum authorized amount does not exceed the maximum remaining fare from the departure station.
+
+QCAT Ticket Issuers must monitor the ticket usage and payment behavior of the customer and prevent passengers from generating new post-paid tickets if the risk of non-collection is too high. The QCAT acceptor must always be paid, so that the credit risk for post-paid tickets always resides with the QCAT Ticket Issuer.
+
+:numbered!:
+== Copyright
+Copyright © 2018 by AF Payments Inc
+
+This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+All rights reserved. This specification or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the Copyright owner.
+
+The Specifications are provided “AS IS” without warranties of any kind, and AF Payments Inc. neither assumes nor accepts any liability for any errors or omissions contained in these Specifications. AF PAYMENTS INC DISCLAIMS ALL REPRESENTATIONS AND WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON- INFRINGEMENT, AS TO THESE SPECIFICATIONS.
+
+AF Payments Inc makes no representations or warranties with respect to intellectual property rights of any third parties in or in relation to the Specifications. AF Payments Inc. undertakes no responsibility to determine whether any implementation of the Specifications may violate, infringe, or otherwise exercise the patent, copyright, trademark, trade secret, know-how, or other intellectual property rights of third parties, and thus any person who implements any part of the Specifications should consult an intellectual property attorney before any such implementation.
+
+Without limiting the foregoing, the Specifications may provide for the use of public key encryption and other technology, which may be the subject matter of patents in several countries. Any party seeking to implement these Specifications is solely responsible for determining whether its activities require a license to any such technology, including for patents on public key encryption technology. AF Payments Inc. shall not be liable under any theory for any party’s infringement of any intellectual property rights in connection with the Specifications.
+
+QR Code is a registered trademark of DENSO WAVE.
