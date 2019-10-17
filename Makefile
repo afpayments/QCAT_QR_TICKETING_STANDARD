@@ -92,7 +92,7 @@ build/samples/%.html:	samples/%.adoc
 
 %-release.zip: $(externalpdfs) $(externalhtmls)
 	rm -f build/external/*.zip
-	zip -r build/external/$@ $(externalpdfs) $(externalhtmls) build/external/images -x \*/.DS_Store
+	zip -r build/external/$@ $(externalpdfs) $(externalhtmls) -x \*/.DS_Store
 
 images = $(wildcard images/*.png)
 sampleimages = $(wildcard samples/images/*.png)
