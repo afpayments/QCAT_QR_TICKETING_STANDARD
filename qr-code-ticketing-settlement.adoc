@@ -64,6 +64,8 @@ ifdef::internal[]
 .1+|Ingo Noka .1+| Sept 11, 2019
 | user role names as defined in appendix of standard
 
+.1+|Ingo Noka .1+| Oct 17, 2019
+|Add introduction and general principles of settlement process
 
 |====
 
@@ -76,6 +78,38 @@ ifdef::internal[]
 endif::[]
 
 :numbered:
+
+== Introduction
+
+Settlement in the QCAT eco system is based on bilateral commercial agreements between ticket issuers and acceptors. It is up to the issuers and acceptors to agree on a one or more centralized clearing houses to reduce the overhead of multiple agreements and system connections.
+
+The settlement process generally includes the following steps
+
+[%autowidth]
+|===
+|Participant|Step
+
+|Issuer|Creation of a ticket generation report
+|issuer|Submission of the ticket generation report to the acceptor
+|Acceptor|Reconciliation of ticket generation reports with ticket validation reports
+|Acceptor|Validation of transactions
+|Acceptor|Assignment of transactions to transport operators and issuers ("Clearing")
+|Acceptor|Submission of cleared transactions to transport operators
+|Acceptor|Payment of cleared transactions to transport operators ("Settlement")
+|Acceptor|Submission of cleared transactions to issuers
+|Issuer|Reconciliation of settled transactions with ticket generation report
+|Issuer|Payment of reconciled transactions to acceptor ("Settlement")
+|===
+
+== General Principles of the Settlement Process
+
+. Settlement must not be denied for purely technical reasons if the passenger has not disputed their participation in the transaction
+. The transport operator always gets paid for all transactions as defined in the fare collection agreement, unless the transit operators acts as its own QCAT Acceptor or violated their obligations under the agreement with the acceptor.  In other words the dispute resolution guidelines apply to the settlement between issuer and acceptor only unless otherwise agreed differently between the acceptor and the transport operator
+. For pre-paid tickets, the settlement parties must agree whether settlement will be based on ticket creation or ticket validation.
+.. If the issuer generates the tickets independently from the acceptor or transport operator (for example on the customer's phone), then settlement should be based on validation transactions.
+.. If the tickets are generated on the vehicle or in cooperation with the operator and a validation transaction cannot be guaranteed for all used tickets, then settlement should be based on the ticket generation transaction.
+.. If tickets are validated at an automated gate, which prevents access to the public transport vehicle or the paid area, settlement should be based on validation transactions.
+. Special processing rules based on ticket type or other data in the QR code payload require prior commercial agreements between issuer and acceptors. The agreement would need to identify the data (for example the ticket type) and the special processing rules associated with the data (for example to discount the fare amount).
 
 == Post-Paid Ticket Settlement Flow
 
