@@ -68,11 +68,11 @@ endif::[]
 
 == Fixed vs. Refreshing QR Codes
 
-One of the measures to limit the impact of copying QR codes is to refresh the QR code in regular intervals.  The refreshed QR code represents the same ticket, but it contains updated data, which can be validated by QCAT Validation Terminal.
+One of the measures to limit the impact of fraudulent copying of QR codes is to refresh the QR code in regular intervals.  The refreshed QR code represents the same ticket, but it contains updated data, which can be validated by QCAT Validation Terminals.
 
-The QCAT Standard defines the data field `Refresh Time`, which contains a timestamp. The QCAT Validation Terminal verifies whether the refresh time is in the past and rejects the terminal if it does.
+The QCAT Standard defines the data field `Refresh Time`, which contains a timestamp. The QCAT Validation Terminal verifies whether the refresh time is in the past and rejects the terminal if it is.
 
-Refreshing QR codes only work if the QR code is issued and presented on the passenger's mobile phone, because it requires a phone (and potentially a backend system) to create a new QR code in regular intervals.
+Refreshing QR codes only works if the QR code is issued and presented on the passenger's mobile phone, because it requires a phone (and potentially a backend system) to create a new QR code in regular intervals.
 
 Paper-based QCAT tickets are always fixed, i.e. they should not contain a refresh time.
 
