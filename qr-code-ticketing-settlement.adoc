@@ -81,7 +81,18 @@ endif::[]
 
 == Introduction
 
-Settlement in the QCAT eco system is based on bilateral commercial agreements between ticket issuers and acceptors. It is up to the issuers and acceptors to agree on a one or more centralized clearing houses to reduce the overhead of multiple agreements and system connections.
+Settlement in the QCAT eco system is based on bilateral commercial agreements between ticket issuers and acceptors. This has a number of disadvantages:
+
+- The more issuers and acceptors enter the market, the more agreements need to be negotiated for passengers to be able to create and use tickets for as many public transport options as possible.
+- Issuer need to settle with multiple acceptors and acceptors have to settle with multiple issuers, which increases complexity and the financial risk for the acceptor.
+- Public transport operators can only accept tickets from issuers with whom their QCAT Acceptor has entered into agreements.
+- Passenger may have to sign up with multiple issuers to generate tickets for the public transport they are using
+
+However, at the beginning of the development of the QCAT Eco-System there will be relatively few issuers and acceptors and aa system that is based on bilateral agreements allows speed to market and a quick startup of the system.
+
+As the system grows and more entities join, it will be up to the issuers and acceptors to agree on one or more centralized clearing houses to reduce the overhead of multiple agreements and system connections.
+
+== The General Settlement Process
 
 The settlement process generally includes the following steps
 
@@ -108,8 +119,8 @@ The settlement process generally includes the following steps
 . For pre-paid tickets, the settlement parties must agree whether settlement will be based on ticket creation or ticket validation.
 .. If the issuer generates the tickets independently from the acceptor or transport operator (for example on the customer's phone), then settlement should be based on validation transactions.
 .. If the tickets are generated on the vehicle or in cooperation with the operator and a validation transaction cannot be guaranteed for all used tickets, then settlement should be based on the ticket generation transaction.
-.. If tickets are validated at an automated gate, which prevents access to the public transport vehicle or the paid area, settlement should be based on validation transactions.
-. Special processing rules based on ticket type or other data in the QR code payload require prior commercial agreements between issuer and acceptors. The agreement would need to identify the data (for example the ticket type) and the special processing rules associated with the data (for example to discount the fare amount).
+.. If tickets are validated at an automated gate, which prevents access to the public transport vehicle or the paid area for passengers without a valid ticket, settlement should be based on validation transactions.
+. Special processing rules based on ticket type or other data in the QR code payload require prior commercial agreements between issuer and acceptors. The agreement would need to identify the data (for example the ticket type) and the special processing rules associated with the data (for example to discount the fare amount). The default ticket types "Senior Citizen", "PWD" and "Student" may require special processing by law.  In those cases the acceptor should specify in their agreement whether the issuer is authorized to create tickets with such ticket types for the acceptor.
 
 == Post-Paid Ticket Settlement Flow
 
