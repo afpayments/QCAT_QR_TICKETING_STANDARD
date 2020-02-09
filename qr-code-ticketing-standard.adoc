@@ -496,7 +496,7 @@ include::{includedir}samples/tlv-list-max.adoc[tags=C2]
 
 // --------------------------------------------------------------------------------
 ===== Ticket Creation Time
-Time at which the ticket was created.  The ticket validity and QR refreshment periods are always interpreted with this time as the base.
+Time at which the ticket was created.  The QR refreshment periods are always interpreted with this time as the base.  The expiry time is calculated with this time as the base only if there is no effective time included in the ticket data.
 
 [width="100%",cols="10,25,15,30,30"]
 |====
@@ -513,7 +513,7 @@ include::{includedir}samples/tlv-list-max.adoc[tags=C3]
 
 // --------------------------------------------------------------------------------
 ===== Ticket Validity Period
-Time period in seconds from the time of ticket creation after which the ticket is not valid anymore.
+Time period in seconds after which the ticket is not valid anymore. The expiry time is calculated by adding the seconds to the effective time if the ticket if a ticket effective time is included in the ticket data, or the time of ticket creation if no effective time is included in the ticket data.
 
 [width="100%",cols="10,25,15,30,30"]
 |====
@@ -572,7 +572,7 @@ include::{includedir}samples/tlv-list-max.adoc[tags=C6]
 |====
 // --------------------------------------------------------------------------------
 ===== Ticket Effective Time
-Time after which the ticket is valid. Default is the ticket creation time.
+Time after which the ticket is valid. Default is the ticket creation time. If the effective time is included in the ticket data, then the expiry time is calculated by adding the expiry period to this effective time.
 
 [width="100%",cols="10,25,15,30,30"]
 |====
