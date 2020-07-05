@@ -518,7 +518,15 @@ include::samples/tlv-list-max.adoc[tags=C3]
 
 // --------------------------------------------------------------------------------
 ===== Ticket Validity Period
-Time period in seconds after which the ticket is not valid anymore. The expiry time is calculated by adding the seconds to the effective time if the ticket if a ticket effective time is included in the ticket data, or the time of ticket creation if no effective time is included in the ticket data.
+Time period in seconds after which the ticket is not valid anymore. Validation terminals must calculate the expiry time as follows:
+
+[code]
+----
+if( "effective time" is present )
+    "effective time" + "validity period"
+else
+    "creation time" + "validity period"
+----
 
 [width="100%",cols="10,25,15,30,30"]
 |====
