@@ -130,6 +130,12 @@
 // tag::D3[]
 `D30A31323334353637383930`
 // end::D3[]
+// tag::D4-value[]
+`TBD`
+// end::D4-value[]
+// tag::D4[]
+`TBD`
+// end::D4[]
 // tag::DE-value[]
 `Version: 2, SHA1withECDSA`
 // end::DE-value[]

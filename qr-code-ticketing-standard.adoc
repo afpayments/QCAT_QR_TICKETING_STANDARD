@@ -31,6 +31,10 @@ ifdef::backend-pdf[]
 //:title-logo-image: image:beep_logo.png[pdfwidth=40%,width=40%,align=right]
 endif::[]
 
+ifndef::includedir[]
+:includedir:
+endif::[]
+
 ifdef::internal[]
 [WARNING]
 ====
@@ -391,6 +395,50 @@ Contact AF Payments Inc, for a list of proprietary ticket types.
 ====
 endif::[]
 
+== Funding Source Types
+The funding source types define the type of funding source that was used to pay for the ticket.
+
+IMPORTANT: Additional funding source types must be registered with the QCAT Registrar. This specification does not allow proprietary funding source types.
+
+Validation terminals should not reject tickets that contain an unknown funding source type.
+
+If the funding source type is unknown, then the QR code smusthould not include a funding source type field.
+
+.Funding Source Types
+[cols="20,20,60"]
+|====
+|Identifier|Type|Description
+
+|0|Reserved|
+|1|Cash|The ticket was paid for with cash (passenger present)
+|2|Bank card, card present|The ticket was paid for with a banking card, which could be a Credit, Debit or proprietary bank card (cardholder and card present, i.e. face-to-face transactions)
+|3|Bank card, card not present|The ticket was paid for with a banking card, which could be a Credit, Debit or proprietary bank card (cardholder and/or card not present, i.e. online transactions)
+|4|E-Wallet, customer present|The ticket was paid for with funds coming out of an online e-wallet application. The customer is present at the point of sales transaction.  Typically, the customer uses a mobile application to scan or generate a payment QR code while physically present at a ticket sales booth or while interacting with a conductor.
+|5|E-Wallet, customer not present|The ticket was paid for with funds coming out of an online e-wallet application. The customer uses a mobile phone application directly to pay and generate the QR ticket. There is no interaction with a sales clerk at a ticketing booth or with a conductor.
+|6|Bank account|The ticket was paid for with funds directly debited from a bank account. (usually online transactions only)
+|7|Transpo|The ticket was paid for with the stored value coming from a Transpo(TM) compliant card.
+|7-0xFFFF|Reserved|
+|====
+
+== Funding Source Provider
+The meaning of the value in the funding source provider field is defined based on the type of funding source.
+
+.Funding Source Provider
+[cols="10,20,60"]
+|====
+2+|Funding Source Type|Values
+
+|0|Reserved|
+|1|Cash|No Funding source provider allowed.
+|2|Bank card, card present|The bank card BIN.
+|3|Bank card, card not present|The bank card BIN.
+|4|E-Wallet, customer present|Participant ID as defined by the QCAT Registrar
+|5|E-Wallet, customer not present|Participant ID as defined by the QCAT Registrar
+|6|Bank account|SWIFT code
+|7|Transpo|Issuer ID or participant ID as defined by the QCAT Registrar
+|7-0xFFFF|Reserved|
+|====
+
 
 == QR Ticket Format
 
@@ -456,7 +504,7 @@ And a length of `500` is encoded as
 . The QR code may contain further Application Templates, which are outside the scope of this specification.  The EMV standard size limitation applies to the total of all the data in the QR code.
 
 .Sample of a valid TLV structure of a QCAT ticket
-include::samples/qr-samples-max.adoc[tags=tlv]
+include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
 
 === QR Code Fields
@@ -494,9 +542,9 @@ The ticket creator is the organization that is authorized to create tickets and 
 |Unsigned Integer,  +
 16 bit
 |N/A |
-include::samples/tlv-list-max.adoc[tags=C2-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C2-value]
 |
-include::samples/tlv-list-max.adoc[tags=C2]
+include::{includedir}samples/tlv-list-max.adoc[tags=C2]
 |====
 
 // --------------------------------------------------------------------------------
@@ -510,10 +558,10 @@ Time at which the QCAT Ticket Issuer created the ticket. The validation terminal
 | 3 |Timestamp
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=C3-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C3-value]
 // `2019-04-06T17:12:53+08:00` => `1538028205` => *`5CA86D95`*
 |
-include::samples/tlv-list-max.adoc[tags=C3]
+include::{includedir}samples/tlv-list-max.adoc[tags=C3]
 |====
 
 // --------------------------------------------------------------------------------
@@ -537,10 +585,10 @@ else
 32 bit
 |15m => 900s => *`0x0384`*
 |
-include::samples/tlv-list-max.adoc[tags=C4-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C4-value]
 // 24h => 86,400s => *`015180`*
 |
-include::samples/tlv-list-max.adoc[tags=C4]
+include::{includedir}samples/tlv-list-max.adoc[tags=C4]
 
 |====
 
@@ -558,10 +606,10 @@ Identifies the public transport domain in which the ticket is valid. Ticket Vali
 16 bit
 |`0` (All)
 |
-include::samples/tlv-list-max.adoc[tags=C5-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C5-value]
 // `1` (Rail only)
 |
-include::samples/tlv-list-max.adoc[tags=C5]
+include::{includedir}samples/tlv-list-max.adoc[tags=C5]
 
 |====
 // --------------------------------------------------------------------------------
@@ -577,10 +625,10 @@ The identifier of transport operator for which the ticket is valid. There could 
 32 bit
 | all operators
 |
-include::samples/tlv-list-max.adoc[tags=C6-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C6-value]
 // 4,095 => *`FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=C6]
+include::{includedir}samples/tlv-list-max.adoc[tags=C6]
 
 |====
 // --------------------------------------------------------------------------------
@@ -595,10 +643,10 @@ Time after which the ticket is valid. Default is the ticket creation time. If th
 |Timestamp
 | 0 (Immediate)
 |
-include::samples/tlv-list-max.adoc[tags=C7-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C7-value]
 // Ticket is valid from Monday, 28 2019 at 6 am => the equivalent UTC time is "Sun Jan 27 22:00:00 UTC 2019" => `1548626400` => *`5C4E29E0`*
 |
-include::samples/tlv-list-max.adoc[tags=C7]
+include::{includedir}samples/tlv-list-max.adoc[tags=C7]
 
 |====
 
@@ -614,10 +662,10 @@ Time after which the ticket need to be refreshed with a new refresh time and sig
 |Timestamp
 |0 (static)
 |
-include::samples/tlv-list-max.adoc[tags=C8-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C8-value]
 // Ticket will not be accepted unless refreshed with a new refresh time after Monday, 28 2019 at 06:00:30 am => the equivalent UTC time is "Sun Jan 27 22:00:30 UTC 2019" => `1548626430` => *`5C4E29FE`*
 |
-include::samples/tlv-list-max.adoc[tags=C8]
+include::{includedir}samples/tlv-list-max.adoc[tags=C8]
 
 
 |====
@@ -634,10 +682,10 @@ Indicates a special processing rule that will be applied when calculating the fa
 16 bit
 |1 (Standard)
 |
-include::samples/tlv-list-max.adoc[tags=C9-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=C9-value]
 // 2 (Senior Citizen)
 |
-include::samples/tlv-list-max.adoc[tags=C9]
+include::{includedir}samples/tlv-list-max.adoc[tags=C9]
 
 |====
 
@@ -654,10 +702,10 @@ The account identifier provides information about the passenger's account with t
 Excl. Control Characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CA-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CA-value]
 // id "A-4095" => *`0x41 0x2d 0x34 0x30 0x39 0x35`*
 |
-include::samples/tlv-list-max.adoc[tags=CA]
+include::{includedir}samples/tlv-list-max.adoc[tags=CA]
 
 |====
 
@@ -674,10 +722,10 @@ The identifier of the boarding station or stop for which the ticket is valid.
 32 bit
 | Any boarding station
 |
-include::samples/tlv-list-max.adoc[tags=CB-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CB-value]
 // 1
 |
-include::samples/tlv-list-max.adoc[tags=CB]
+include::{includedir}samples/tlv-list-max.adoc[tags=CB]
 
 |====
 // --------------------------------------------------------------------------------
@@ -694,10 +742,10 @@ The identifier of the destination station or stop to which the ticket is valid.
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CC-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CC-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CC]
+include::{includedir}samples/tlv-list-max.adoc[tags=CC]
 
 |====
 
@@ -715,10 +763,10 @@ The identifier of the vehicle for which the ticket is valid (e.g bus number).
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CD-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CD-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CD]
+include::{includedir}samples/tlv-list-max.adoc[tags=CD]
 
 |====
 
@@ -736,10 +784,10 @@ The id of the route for which the ticket is valid (e.g bus number).
 32 bit
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CE-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CE-value]
 // id 4,095 => *`0FFF`*
 |
-include::samples/tlv-list-max.adoc[tags=CE]
+include::{includedir}samples/tlv-list-max.adoc[tags=CE]
 
 |====
 
@@ -755,10 +803,10 @@ The identifier for a particular seat that has been reserved for the passenger pr
 | ASCII max 5 characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=CF-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=CF-value]
 // "3D"
 |
-include::samples/tlv-list-max.adoc[tags=CF]
+include::{includedir}samples/tlv-list-max.adoc[tags=CF]
 
 |====
 // --------------------------------------------------------------------------------
@@ -773,10 +821,10 @@ The identifier for a particular seat class.  The format and meaning is operator 
 | ASCII, max 5 characters
 |N/A
 |
-include::samples/tlv-list-max.adoc[tags=D0-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D0-value]
 // "ECOP" Economy Premium, "BUS" Business Class
 |
-include::samples/tlv-list-max.adoc[tags=D0]
+include::{includedir}samples/tlv-list-max.adoc[tags=D0]
 
 |====
 // --------------------------------------------------------------------------------
@@ -792,10 +840,10 @@ Amount in Centavos.  If the fare amount is known when the passenger starts the t
 32 bit
 | 0 (Unlimited)
 |
-include::samples/tlv-list-max.adoc[tags=D1-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D1-value]
 // 2000 (PHP 20)
 |
-include::samples/tlv-list-max.adoc[tags=D1]
+include::{includedir}samples/tlv-list-max.adoc[tags=D1]
 
 |====
 // --------------------------------------------------------------------------------
@@ -810,10 +858,10 @@ The key identifier is used to distinguish multiple public key certificates assig
 | ASCII `[0-9a-zA-Z_-]`
 | Use first matching public key for Creator Id
 |
-include::samples/tlv-list-max.adoc[tags=D2-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D2-value]
 // BPI BACKEND
 |
-include::samples/tlv-list-max.adoc[tags=D2]
+include::{includedir}samples/tlv-list-max.adoc[tags=D2]
 
 |====
 // --------------------------------------------------------------------------------
@@ -828,12 +876,56 @@ The terminal identifier identifies the device that "produced" the QCAT ticket.  
 | ASCII `[0-9a-zA-Z_-]`
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=D3-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=D3-value]
 // `1352701060268304`
 |
-include::samples/tlv-list-max.adoc[tags=D3]
+include::{includedir}samples/tlv-list-max.adoc[tags=D3]
+|====
+
+// --------------------------------------------------------------------------------
+===== Funding Source Type
+The funding source type identifies the type of funding source that was used to pay for the ticket. Depending on the funding source type, the account identifier can be used to provide more details on the funding source.  For example if the funding source type is "Transpo card" then the account identifier could contain the CAN of the transpo card.
+
+NOTE: The type of funding source is not the same as the organization providing the funding.  For example, Gcash is the funding provider while E-Wallet is the type of funding source.
+
+A QR code should only contain one funding source type. It is undefined which funding source type the terminal will choose if the ticket contains multiple funding source types.
+
+[width="100%",cols="10,25,15,30,30"]
+|====
+|Tag|Format|Default|Sample Value|TLV Sample
+
+| 20
+| Unsigned Integer,
+32 bit
+| N/A
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D4-value]
+// `1352701060268304`
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D4]
+
 
 |====
+
+===== Funding Source Provider
+The participant ID of the funding source provider. The meaning of the value in this field depends on the funding source type.  For example, if the funding source type is a bank card, then the value would represent a BIN, in case of a Transpo(TM) card, the value may represent the IIN of the stored value card. See <<Funding Source Provider>> for the meaning of this field.
+
+[width="100%",cols="10,25,15,30,30"]
+|====
+|Tag|Format|Default|Sample Value|TLV Sample
+
+| 21
+| ASCII `[0-9a-zA-Z_-]`
+| N/A
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D5-value]
+// `1352701060268304`
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D5]
+|====
+
+TIP: If the ticket contains an account identifier, and the account identifier contains the funding source provider, e.g., the BIN in a credit card number, then the QR Code should contain a funding source provider field.
+
 // --------------------------------------------------------------------------------
 ===== Signature
 The signature proves that the the QR code was indeed created by the QCAT Ticket Issuer. The signature is calculated according to the algorithm that is described in this specification. The first byte contains a version number and the remaining bytes contain the signature value. Version numbers from `0x00 ... 0x7F` are reserved for this specification. Version number `0x80 ... 0xFF` can be used for proprietary algorithms.
@@ -846,10 +938,10 @@ The signature proves that the the QR code was indeed created by the QCAT Ticket 
 | binary
 | N/A
 |
-include::samples/tlv-list-max.adoc[tags=DE-value]
+include::{includedir}samples/tlv-list-max.adoc[tags=DE-value]
 // 0x01 ...
 |
-include::samples/tlv-list-max.adoc[tags=DE]
+include::{includedir}samples/tlv-list-max.adoc[tags=DE]
 
 |====
 
@@ -951,7 +1043,7 @@ The signature creation is performed over the raw bytes of the BER encoded data, 
 
 For example, given the above TLV structure of a ticket the signature would be generated over the following data (bytes in hex):
 
-include::samples/qr-samples-max.adoc[tags=signature-data]
+include::{includedir}samples/qr-samples-max.adoc[tags=signature-data]
 
 
 ==== Signature Validation
