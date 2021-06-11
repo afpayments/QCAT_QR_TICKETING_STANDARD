@@ -31,6 +31,10 @@ ifdef::backend-pdf[]
 //:title-logo-image: image:beep_logo.png[pdfwidth=40%,width=40%,align=right]
 endif::[]
 
+ifndef::includedir[]
+:includedir:
+endif::[]
+
 ifdef::internal[]
 [WARNING]
 ====
@@ -336,7 +340,7 @@ IMPORTANT: Additional ticket types must be registered with the QCAT Registrar
 
 A QR code can contain more than one type.
 
-Proprietary ticket types must be unique within the context of one QCAT Ticket Acceptor. In other words, the ticket type must have the same meaning in all transport operators (defined by validity domain or transport operator IDs) in which the ticket is valid. This also means that if the default validity domain for "All forms of public transport" is included, only standard ticket types should be used.
+Proprietary ticket types must be unique within the context of one QCAT Ticket Acceptor.In other words, the ticket type must have the same meaning in all transport operators (defined by validity domain or transport operator IDs) in which the ticket is valid.This also means that if the default validity domain for "All forms of public transport" is included, only standard ticket types should be used.
 
 Validation terminals that do not recognize a proprietary ticket type should ignore it.
 
@@ -359,7 +363,7 @@ Validation terminals that do not recognize a proprietary ticket type should igno
 |0x8000 ... 0xFFFF|QR issuer specific types
 |====
 
-### Proprietary Ticket Type Definitions
+=== Proprietary Ticket Type Definitions
 
 ifdef::internal[]
 
@@ -391,6 +395,50 @@ Contact AF Payments Inc, for a list of proprietary ticket types.
 ====
 endif::[]
 
+== Funding Source Types
+The funding source types define the type of funding source that was used to pay for the ticket.
+
+IMPORTANT: Additional funding source types must be registered with the QCAT Registrar. This specification does not allow proprietary funding source types.
+
+Validation terminals should not reject tickets that contain an unknown funding source type.
+
+If the funding source type is unknown, then the QR code smusthould not include a funding source type field.
+
+.Funding Source Types
+[cols="20,20,60"]
+|====
+|Identifier|Type|Description
+
+|0|Reserved|
+|1|Cash|The ticket was paid for with cash (passenger present)
+|2|Bank card, card present|The ticket was paid for with a banking card, which could be a Credit, Debit or proprietary bank card (cardholder and card present, i.e. face-to-face transactions)
+|3|Bank card, card not present|The ticket was paid for with a banking card, which could be a Credit, Debit or proprietary bank card (cardholder and/or card not present, i.e. online transactions)
+|4|E-Wallet, customer present|The ticket was paid for with funds coming out of an online e-wallet application. The customer is present at the point of sales transaction.  Typically, the customer uses a mobile application to scan or generate a payment QR code while physically present at a ticket sales booth or while interacting with a conductor.
+|5|E-Wallet, customer not present|The ticket was paid for with funds coming out of an online e-wallet application. The customer uses a mobile phone application directly to pay and generate the QR ticket. There is no interaction with a sales clerk at a ticketing booth or with a conductor.
+|6|Bank account|The ticket was paid for with funds directly debited from a bank account. (usually online transactions only)
+|7|Transpo|The ticket was paid for with the stored value coming from a Transpo(TM) compliant card.
+|7-0xFFFF|Reserved|
+|====
+
+== Funding Source Provider
+The meaning of the value in the funding source provider field is defined based on the type of funding source.
+
+.Funding Source Provider
+[cols="10,20,60"]
+|====
+2+|Funding Source Type|Values
+
+|0|Reserved|
+|1|Cash|No Funding source provider allowed.
+|2|Bank card, card present|The bank card BIN.
+|3|Bank card, card not present|The bank card BIN.
+|4|E-Wallet, customer present|Participant ID as defined by the QCAT Registrar
+|5|E-Wallet, customer not present|Participant ID as defined by the QCAT Registrar
+|6|Bank account|SWIFT code
+|7|Transpo|Issuer ID or participant ID as defined by the QCAT Registrar
+|7-0xFFFF|Reserved|
+|====
+
 
 == QR Ticket Format
 
@@ -409,42 +457,47 @@ endif::[]
 
 . If the value of the TLV data object has a length of less than `128` bytes, then the length must be encoded in one byte, for example a length of `127` is encoded as
 +
-```
+[source]
+----
 7F
-```
+----
 
 . If the value of the TLV data object has a length of `128` to `255` bytes, then the length must be encoded in two bytes, and if the length is bigger then `255`, in three bytes,  for example a length of `255` is encoded as
 +
-```
+[source]
+----
 81 FF
-```
+----
 +
 And a length of `500` is encoded as
 +
-```
+[source]
+----
 82 01 F4
-```
+----
 
-. The first TLV object in the QR payload data is always the Payload Format Indicator (tag `0x85`) with a fixed value length of 5 bytes.  In this specification the value must be `CPV01`.  This convention is required by the EMV specification.
+. The first TLV object in the QR payload data is always the Payload Format Indicator (tag `0x85`) with a fixed value length of 5 bytes.  In this specification the value must be `CPV01`.  This convention is a requirement of the EMV specification.
 +
-```
+[source]
+----
 85 05 43 50 56 30 31
-```
+----
 . This means the base64 data encoded in the QR code must always start with "`hQVDUFY`".  Using this string, the validator terminal can identify QR codes that are candidates for QCAT tickets
 
 . The second TLV object must be an Application Template (tag `0x61`), which contains an Application Specific Transparent Template (tag `0x63`),
 
 . The ADF name of the Application Template (tag `4F`) must be included as the first data object and for this version of the specification must contain the value `QCAT01`, i.e.
 +
-```
+[source]
+----
 4F 06 51 43 41 54 30 31
-```
+----
 
 . The Application Template may contain EMV specified data objects for proprietary processing purposes. These data objects will be ignored by the validation terminal.
 
 . The Application Template must contain an Application Specific Transparent Template (tag `0x63`) which must only contain  TLV data objects defined in <<QR Code Fields>>.
 
-. With the exception of the ADF name, which is always the first data object, and the signature, which is always the last data object, all other data objects in the Application Specific Transparent Template may appear in any order.
+. Except for the ADF name, which is always the first data object, and the signature, which is always the last data object, all other data objects in the Application Specific Transparent Template may appear in any order.
 
 . Some data objects may appear multiple times.  If a data object is included multiple times, the POI application creates a list of objects, i.e. each appearance is significant.  For example the Ticket Validity Domain may appear multiple times which means that the ticket is valid in all the included domains.
 
@@ -456,7 +509,7 @@ include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
 === QR Code Fields
 
-I the following field definitions O means Optional, C means Conditional and M means Mandatory.
+In the following field definitions O means Optional, C means Conditional and M means Mandatory.
 
 // ---------------------- Mandatory Fields ----------------------------------------
 
@@ -467,7 +520,7 @@ The ticket identifier is unique in combination with either the time of creation 
 
 [width="100%",cols="10,25,15,30,30"]
 |====
-|Tag |Format  |Default |Sample Value|TLV Sample
+|Tag |Format  |Default |Sample Value |TLV Sample
 
 |1
 |Unsigned Integer,  +
@@ -479,7 +532,7 @@ The ticket identifier is unique in combination with either the time of creation 
 
 // --------------------------------------------------------------------------------
 ===== Ticket Creator ID
-The ticket creator is the organization that is authorized to create tickets and that will be liable for the fare amount when the ticket is accepted by QCAT Ticket Acceptor.
+The ticket creator is the organization that is authorized to create tickets and that will be liable for the fare amount when a QCAT Ticket Acceptor accepted the ticket.
 
 [width="100%",cols="10,25,15,30,30"]
 |====
@@ -496,7 +549,7 @@ include::{includedir}samples/tlv-list-max.adoc[tags=C2]
 
 // --------------------------------------------------------------------------------
 ===== Ticket Creation Time
-Time at which the ticket was created.  The QR refreshment periods are always interpreted with this time as the base.  The expiry time is calculated with this time as the base only if there is no effective time included in the ticket data.
+Time at which the QCAT Ticket Issuer created the ticket. The validation terminal will calculate the expiry time with this time as the base unless there is an effective time included in the ticket data.
 
 [width="100%",cols="10,25,15,30,30"]
 |====
@@ -513,7 +566,15 @@ include::{includedir}samples/tlv-list-max.adoc[tags=C3]
 
 // --------------------------------------------------------------------------------
 ===== Ticket Validity Period
-Time period in seconds after which the ticket is not valid anymore. The expiry time is calculated by adding the seconds to the effective time if the ticket if a ticket effective time is included in the ticket data, or the time of ticket creation if no effective time is included in the ticket data.
+Time period in seconds after which the ticket is not valid anymore. Validation terminals must calculate the expiry time as follows:
+
+[code]
+----
+if( "effective time" is present )
+    "effective time" + "validity period"
+else
+    "creation time" + "validity period"
+----
 
 [width="100%",cols="10,25,15,30,30"]
 |====
@@ -819,8 +880,52 @@ include::{includedir}samples/tlv-list-max.adoc[tags=D3-value]
 // `1352701060268304`
 |
 include::{includedir}samples/tlv-list-max.adoc[tags=D3]
+|====
+
+// --------------------------------------------------------------------------------
+===== Funding Source Type
+The funding source type identifies the type of funding source that was used to pay for the ticket. Depending on the funding source type, the account identifier can be used to provide more details on the funding source.  For example if the funding source type is "Transpo card" then the account identifier could contain the CAN of the transpo card.
+
+NOTE: The type of funding source is not the same as the organization providing the funding.  For example, Gcash is the funding provider while E-Wallet is the type of funding source.
+
+A QR code should only contain one funding source type. It is undefined which funding source type the terminal will choose if the ticket contains multiple funding source types.
+
+[width="100%",cols="10,25,15,30,30"]
+|====
+|Tag|Format|Default|Sample Value|TLV Sample
+
+| 20
+| Unsigned Integer,
+32 bit
+| N/A
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D4-value]
+// `1352701060268304`
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D4]
+
 
 |====
+
+===== Funding Source Provider
+The participant ID of the funding source provider. The meaning of the value in this field depends on the funding source type.  For example, if the funding source type is a bank card, then the value would represent a BIN, in case of a Transpo(TM) card, the value may represent the IIN of the stored value card. See <<Funding Source Provider>> for the meaning of this field.
+
+[width="100%",cols="10,25,15,30,30"]
+|====
+|Tag|Format|Default|Sample Value|TLV Sample
+
+| 21
+| ASCII `[0-9a-zA-Z_-]`
+| N/A
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D5-value]
+// `1352701060268304`
+|
+include::{includedir}samples/tlv-list-max.adoc[tags=D5]
+|====
+
+TIP: If the ticket contains an account identifier, and the account identifier contains the funding source provider, e.g., the BIN in a credit card number, then the QR Code should contain a funding source provider field.
+
 // --------------------------------------------------------------------------------
 ===== Signature
 The signature proves that the the QR code was indeed created by the QCAT Ticket Issuer. The signature is calculated according to the algorithm that is described in this specification. The first byte contains a version number and the remaining bytes contain the signature value. Version numbers from `0x00 ... 0x7F` are reserved for this specification. Version number `0x80 ... 0xFF` can be used for proprietary algorithms.
@@ -865,10 +970,12 @@ For example, `Tue Nov 13 13:16:17 +08 2018` is encoded as `1542086177`, i.e. `0x
 Four bytes will overflow at `Sun Feb  7 06:28:15 UTC 2106`
 
 ifdef::internal[]
+
 .Bash command to show the maximum timestamp that can be expressed in a four byte unsigned integer
-```
+[source]
+----
 gdate -d @$(( 0xFFFFFFFF )) -u
-```
+----
 endif::[]
 
 ====  Dates
@@ -880,11 +987,12 @@ For example, `Tue Nov 13, 2018` is represented as `17848`, i.e. `0x45 0xB8`
 Two bytes will overflow on Jun 6, 2149
 
 ifdef::internal[]
-.Bash command to show the maximum date that can be expressed in a two byte unsigned integer
 
-```
+.Bash command to show the maximum date that can be expressed in a two byte unsigned integer
+[source]
+----
 gdate -d @$(( 0xFFFF * 24 * 60 * 60 )
-```
+----
 endif::[]
 
 
@@ -958,7 +1066,7 @@ For post-paid tickets discounts are applied to the standard fare at the QCAT Acc
 
 . Check whether the QR ticket has expired
 +
-[source,Kotlin,subs="normal"]
+[source,subs="normal"]
 ----
 if (Time^Now^ < (Time^Creation^ + ValidityPeriod))
     "OK"
@@ -1027,7 +1135,7 @@ If the QCAT Ticket Acceptor accepts tickets without having a prior acceptance ag
 
 The QR code may be refreshed in regular intervals as indicated in the `Refresh Time` field. If this field is present and not `0`, then the QR code is only valid if the current time is earlier then the refresh time.
 
-[source,Kotlin,subs="normal"]
+[source,subs="normal"]
 ----
 if (Time^Now^ < RefreshTime + GracePeriod)
     "OK"

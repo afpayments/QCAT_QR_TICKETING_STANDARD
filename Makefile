@@ -77,6 +77,7 @@ build/external/%-external.html:	%.adoc
 build/samples/%.pdf: samples/%.adoc
 		asciidoctor-pdf -a internal  -a pdf-stylesdir=styles -a pdf-style=log -a imagesdir=images/ -o build/samples/$*.pdf $<
 
+# The samples have the images inlined already
 build/samples/%.html:	samples/%.adoc
 		asciidoctor -a internal -a stylesdir=../styles -a stylesheet=colony.css -a image-dir=images/ -o build/samples/$*.html $<
 
