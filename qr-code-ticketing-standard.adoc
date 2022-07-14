@@ -438,7 +438,7 @@ The meaning of the value in the funding source provider field is defined based o
 |6|Bank account|SWIFT code
 |7|Transpo|Issuer ID or participant ID as defined by the QCAT Registrar
 |8|CASH-PAID |No Funding source provider allowed.
-|7-0xFFFF|Reserved|
+|8-0xFFFF|Reserved|
 |====
 
 
