@@ -418,7 +418,8 @@ If the funding source type is unknown, then the QR code smusthould not include a
 |6|Bank account|The ticket was paid for with funds directly debited from a bank account. (usually online transactions only)
 |7|Transpo|The ticket was paid for with the stored value coming from a Transpo(TM) compliant card.
 |8|CASH-PAID | The ticket was paid for with cash (passenger present) in advanced or scheduled trip.
-|8-0xFFFF|Reserved|
+|9|REBOOK| The Ticket was rebooked. Only advanced ticket is allowed to rebook.
+|10-0xFFFF|Reserved|
 |====
 
 == Funding Source Provider
@@ -438,7 +439,8 @@ The meaning of the value in the funding source provider field is defined based o
 |6|Bank account|SWIFT code
 |7|Transpo|Issuer ID or participant ID as defined by the QCAT Registrar
 |8|CASH-PAID |No Funding source provider allowed.
-|8-0xFFFF|Reserved|
+|9|REBOOK|No Funding source provider allowed.
+|10-0xFFFF|Reserved|
 |====
 
 
