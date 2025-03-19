@@ -125,6 +125,9 @@ paid tickets
 |Add sample data from automatically generated data
 |Update generated sample data and change directory structure
 
+.1+|Peter Joshua Linchangco .2+| March 2025
+|Added protobuf ticket specifications
+
 |====
 
 .To Do
@@ -144,6 +147,8 @@ This specification outlines the concepts of a QR code based ticketing system for
 The specification for the QR payload follows the EMVCo standard framework without using any of the optional data elements that the EMVCo standard introduces to support retail payment transactions.
 
 Following the EMVCo standard also provides flexibility for ticket issuers and QCAT Ticket Acceptors to define additional data and standards.
+
+Can also be encoded and decoded with google protobuf data format for a lightweight QR code.
 
 
 == General Requirements and Features
@@ -446,7 +451,7 @@ The meaning of the value in the funding source provider field is defined based o
 
 == QR Ticket Format
 
-=== QR Ticket Encoding
+=== QR Ticket EMV Encoding
 
 . The QR Code is encoded as defined in Section 3.2 of <<emv-qr-spec-consumer,EMV Customer Presented QR Specification>>
 
@@ -510,6 +515,145 @@ And a length of `500` is encoded as
 .Sample of a valid TLV structure of a QCAT ticket
 include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
+=== QR Ticket Protobuf 
+
+==== QCAT protobuf ticket format
+
+. A protobuf ticket when read is formatted in base64
+[Source]
+----
+TQj9AhDCBBi67MS+BiDF8gEyAwjCBEoCCAFaAggBYgIIBmoDCMg+cgQI3dACigEDCJQKkgEECgJQMZoBBwoFMjIyNDCiAQIIBMoBAggBHd+wLw==
+----
+
+- After decoding the base64 to hex
+
+[source]
+----
+4d08fd0210c20418baecc4be0620c5f201320308c2044a0208015a020801620208066a0308c83e720408ddd0028a010308940a9201040a0250319a01070a053232323430a201020804ca010208011ddfb02f
+----
+
+- Breakdown of hex string
+
+[source]
+----
+4d
+
+08fd0210c20418baecc4be0620c5f201320308c2044a0208015a020801620208066a0308c83e720408ddd0028a010308940a9201040a0250319a01070a053232323430a201020804ca01020801
+
+1ddfb02f
+----
+
+- The first byte indicates the QCAT payload length
+
+[source]
+----
+'4d'
+----
+
+- The payload is after the length 
+
+[source]
+----
+'08fd0210c20418baecc4be0620c5f201320308c2044a0208015a020801620208066a0308c83e720408ddd0028a010308940a9201040a0250319a01070a053232323430a201020804ca01020801'
+----
+
+- The last remaining bytes is the qcat signature
+
+[source]
+----
+'1ddfb02f'
+----
+
+==== JSON Sample of ticket decoded from protobuf
+[source]
+----
+{
+  "ticketId": 0,
+  "creatorId": 0,
+  "creationTimeStamp": 0,
+  "ticketValidityPeriod": 0,
+  "ticketValidityDomain": [
+    {
+      "value": 0
+    }
+  ],
+  "transportOperatorId": [
+    {
+      "value": 0
+    }
+  ],
+  "effectiveTime": {
+    "value": 0
+  },
+  "refreshTime": {
+    "value": 0
+  },
+  "ticketType": [
+    {
+      "value": 0
+    }
+  ],
+  "accountIdentifier": {
+    "value": ""
+  },
+  "boardingStation": {
+    "value": 0
+  },
+  "destinationStation": {
+    "value": 0
+  },
+  "vehicleId": {
+    "value": 0
+  },
+  "routeId": {
+    "value": 0
+  },
+  "seatNumber": {
+    "value": ""
+  },
+  "seatClass": {
+    "value": ""
+  },
+  "maximumAuthorizedAmount": {
+    "value": 0
+  },
+  "signatureKeyIdentifier": {
+    "value": ""
+  },
+  "terminalIdentifier": {
+    "value": ""
+  },
+  "signatureVersion": {
+    "value": 0
+  },
+  "qcatSignature": {
+    "value": []
+  },
+  "uniqueBoardingStation": [
+    {
+      "operatorId": 0,
+      "validityDomain": 0,
+      "stopId": 0
+    }
+  ],
+  "uniqueDestinationStation": [
+    {
+      "operatorId": 0,
+      "validityDomain": 0,
+      "stopId": 0
+    }
+  ],
+  "encodedPayload": {
+    "value": []
+  },
+  "fundingSourceType": {
+    "value": 0
+  },
+  "fundingSourceProvider": {
+    "value": ""
+  }
+}
+----
 
 === QR Code Fields
 
