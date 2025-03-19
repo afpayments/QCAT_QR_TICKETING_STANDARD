@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2020. Ingo Noka
+ * This file belongs to project qrsvlib.
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/ or send a letter to
+ * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+ *
+ */
+
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+import "qcat-common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.ingonoka.qrsvlib.proto";
+
+package com.ingonoka.qrsvlib.proto;
+
+message QcatTicket {
+  uint64 ticketId = 1;
+  uint32 creatorId = 2;
+  uint64 creationTimeStamp = 3;
+  uint64 ticketValidityPeriod = 4;
+  // Optional
+  repeated google.protobuf.UInt32Value  ticketValidityDomain = 5;
+  repeated google.protobuf.UInt32Value transportOperatorId = 6;
+  google.protobuf.UInt64Value effectiveTime = 7;
+  google.protobuf.UInt64Value refreshTime = 8;
+  repeated google.protobuf.UInt32Value ticketType = 9;
+  google.protobuf.StringValue accountIdentifier = 10;
+  google.protobuf.UInt64Value boardingStation = 11;
+  google.protobuf.UInt64Value destinationStation = 12;
+  google.protobuf.UInt32Value vehicleId = 13;
+  google.protobuf.UInt32Value routeId = 14;
+  google.protobuf.StringValue seatNumber = 15;
+  google.protobuf.StringValue seatClass = 16;
+  google.protobuf.UInt32Value maximumAuthorizedAmount = 17;
+  google.protobuf.StringValue signatureKeyIdentifier = 18;
+  google.protobuf.StringValue terminalIdentifier = 19;
+  google.protobuf.UInt32Value signatureVersion = 20;
+  // The signature can only be verified if encoded payload is included as well
+  google.protobuf.BytesValue qcatSignature = 21;
+
+  // In preparation for ids that are unique for an operator or domain id
+  repeated UniqueStopId uniqueBoardingStation = 22;
+  repeated UniqueStopId uniqueDestinationStation = 23;
+
+  google.protobuf.BytesValue encodedPayload = 24;
+  google.protobuf.UInt32Value fundingSourceType = 25;
+  google.protobuf.StringValue fundingSourceProvider = 26;
+
+}
