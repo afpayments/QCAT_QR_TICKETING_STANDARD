@@ -519,7 +519,14 @@ include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
 ==== QCAT protobuf ticket format
 
-. A protobuf ticket when read is formatted in base64
+- Proto files to encode/decode protobuf QCAT tickets
+
+include::{includedir}protobuf files/qcat-ticket.proto[tags=tlv]
+
+include::{includedir}protobuf files/qcat-common.proto[tags=tlv]
+
+
+- A protobuf ticket when read is formatted in base64
 [Source]
 ----
 TQj9AhDCBBi67MS+BiDF8gEyAwjCBEoCCAFaAggBYgIIBmoDCMg+cgQI3dACigEDCJQKkgEECgJQMZoBBwoFMjIyNDCiAQIIBMoBAggBHd+wLw==
@@ -563,6 +570,12 @@ TQj9AhDCBBi67MS+BiDF8gEyAwjCBEoCCAFaAggBYgIIBmoDCMg+cgQI3dACigEDCJQKkgEECgJQMZoB
 ----
 '1ddfb02f'
 ----
+
+==== Protobuf Signature Verification
+
+- Use the payload section to calculate the signature. Validate against the signature, which is concatenated after the payload.
+
+- See <<Default Signature Algorithms>>
 
 ==== JSON Sample of ticket decoded from protobuf
 [source]
@@ -1174,6 +1187,9 @@ The default algorithms for creating a ticket signature are
 
 . the SHA512 hash with a RSA signature and keys of length 1024 bits, creating a 128 byte signature. The version number of this algorithm is `0x01`
 . the SHA1 hash with a ECDSA signature (Elliptic Curve). The key lengths and therefore the signature length may vary by issuer. The version number of this algorithm is `0x02`
+. 'AESCMAC2'. The version number of this algorithm is '0x03'
+. 'AESCMAC4'. The version number of this algorithm is '0x04'
+. 'AESCMAC16'. The version number of this algorithm is '0x05'
 
 QCAT Ticket Issuers generate a RSA-1024 or ECDSA key pair and request the QCAT Certificate Authority to sign the key with the QCAT Certificate Authority's own RSA-2048 or ECDSA key.
 
