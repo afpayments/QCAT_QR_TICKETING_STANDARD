@@ -131,7 +131,7 @@ ef2e8a37
 ....
 // end::signature[]
 
-=== BASE64 (Characters: 140)
+=== BASE64
 This is the complete data of the ticket, including the signature, encoded with Base64.
 
 ....
