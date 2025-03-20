@@ -517,6 +517,10 @@ include::{includedir}samples/qr-samples-max.adoc[tags=tlv]
 
 === QR Ticket Protobuf 
 
+==== Protocol Buffers Documentation
+
+- link:https://protobuf.dev[Protocol Buffers Documentation]
+
 ==== QCAT protobuf ticket format
 
 - Proto files to encode/decode protobuf QCAT tickets
