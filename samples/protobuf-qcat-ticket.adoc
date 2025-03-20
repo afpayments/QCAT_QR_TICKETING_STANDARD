@@ -2,8 +2,7 @@
 == Protobuf Ticket With Origin and Destination
 
 === Ticket Data
-This is the input data for the ticket creation.  The signature will be added during conversion to a
-TLV object, because the input for the signature algorithm is the BER encoded TLV data.
+This is the input data for the ticket creation.  The signature will be added at the end of payload.
 
 .Ticket data
 ....
@@ -17,16 +16,16 @@ Ticket:
        Terminal ID:                	"22240"
        Validity domain :           	All (Default)
        Transport Operator IDs:     	[551]
-       Route Id : 		   	99900
-       Vehicle Id : 	   		8008
+       Route Id : 		   	      99900
+       Vehicle Id : 	   		      8008
        Effective time:             	Immediate (Default)
        refreshTime:                	static (Default)
        Ticket type :               	STANDARD (Default)
        Boarding station :          	1
-       Destination station : 		18
+       Destination station : 		   18
        Signature Key Identifier :  	"T"
        Maximum Authorized Amount : 	PHP 61.50
-       Funding Source Type : 		CASH
+       Funding Source Type : 		   CASH
        Signature:
           V: 4
           S: ef2e8a37 (HEX)
