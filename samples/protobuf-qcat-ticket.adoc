@@ -17,16 +17,16 @@ Ticket:
        Terminal ID:                	"22240"
        Validity domain :           	All (Default)
        Transport Operator IDs:     	[551]
-	   Route Id : 		   	99900
-	   Vehicle Id : 	   	8008
+       Route Id : 		   	99900
+       Vehicle Id : 	   		8008
        Effective time:             	Immediate (Default)
        refreshTime:                	static (Default)
        Ticket type :               	STANDARD (Default)
        Boarding station :          	1
-	   Destination station : 	18
-	   Signature Key Identifier :  	"T"
-	   Maximum Authorized Amount : 	PHP 61.50
-	   Funding Source Type : 	CASH
+       Destination station : 		18
+       Signature Key Identifier :  	"T"
+       Maximum Authorized Amount : 	PHP 61.50
+       Funding Source Type : 		CASH
        Signature:
           V: 4
           S: ef2e8a37 (HEX)
