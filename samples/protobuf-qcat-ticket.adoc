@@ -1,0 +1,139 @@
+
+== Protobuf Ticket With Origin and Destination
+
+=== Ticket Data
+This is the input data for the ticket creation.  The signature will be added at the end of payload.
+
+.Ticket data
+....
+Ticket:
+   Mandatory:
+       Id:                         	393
+       Creator:                    	551
+       Creation time :            	 Friday, March 21, 2025 4:24:56 AM GMT+08:00
+       Validity period :           	70503 seconds
+   Optional:
+       Terminal ID:                	"22240"
+       Validity domain :           	All (Default)
+       Transport Operator IDs:     	[551]
+       Route Id : 		   	      99900
+       Vehicle Id : 	   		      8008
+       Effective time:             	Immediate (Default)
+       refreshTime:                	static (Default)
+       Ticket type :               	STANDARD (Default)
+       Boarding station :          	1
+       Destination station : 		   18
+       Signature Key Identifier :  	"T"
+       Maximum Authorized Amount : 	PHP 61.50
+       Funding Source Type : 		   CASH
+       Signature:
+          V: 4
+          S: ef2e8a37 (HEX)
+             Version: 4, AESCMAC4
+
+....
+
+=== ProtoJSON
+
+[source]
+----
+{
+  "ticketValidityDomain": [],
+  "transportOperatorId": [
+    {
+      "value": 551
+    }
+  ],
+  "ticketType": [
+    {
+      "value": 1
+    }
+  ],
+  "uniqueBoardingStation": [],
+  "uniqueDestinationStation": [],
+  "ticketId": 393,
+  "creatorId": 551,
+  "creationTimeStamp": 1742502296,
+  "ticketValidityPeriod": 70503,
+  "effectiveTime": null,
+  "refreshTime": null,
+  "accountIdentifier": null,
+  "boardingStation": {
+    "value": 1
+  },
+  "destinationStation": {
+    "value": 18
+  },
+  "vehicleId": {
+    "value": 8008
+  },
+  "routeId": {
+    "value": 99900
+  },
+  "seatNumber": null,
+  "seatClass": null,
+  "maximumAuthorizedAmount": {
+    "value": 6150
+  },
+  "signatureKeyIdentifier": {
+    "value": "T"
+  },
+  "terminalIdentifier": {
+    "value": "22240"
+  },
+  "signatureVersion": {
+    "value": 4
+  },
+  "qcatSignature": null,
+  "encodedPayload": null,
+  "fundingSourceType": {
+    "value": 1
+  },
+  "fundingSourceProvider": null
+}
+----
+
+
+=== Ticket Data - Hex
+This is the complete data of the ticket, including the signature.
+
+// tag::ticket-data[]
+....
+4c08890310a7041898f3f1be0620e7a604320308a7044a0208015a020801620208126a0308c83e720408bc8c068a01030886309201030a01549a01070a053232323430a201020804ca01020801ef2e8a37
+....
+// end::ticket-data[]
+
+=== Signature Data Length 
+This is the value that indicates length of signature data (a.k.a. payload)
+
+// tag::signature-data[]
+....
+4c
+....
+// end::signature-data[]
+=== Signature Input Data - Hex 
+This is the data that forms the raw data input for the calculation of the signature.
+
+// tag::signature-data[]
+....
+08890310a7041898f3f1be0620e7a604320308a7044a0208015a020801620208126a0308c83e720408bc8c068a01030886309201030a01549a01070a053232323430a201020804ca01020801
+....
+// end::signature-data[]
+
+=== Signature - Hex
+
+This is the signature, that is added to the QR code payload data as last TLV in the Transparent AApplication Template.
+
+// tag::signature[]
+....
+ef2e8a37
+....
+// end::signature[]
+
+=== BASE64
+This is the complete data of the ticket, including the signature, encoded with Base64.
+
+....
+TAiJAxCnBBiY8/G+BiDnpgQyAwinBEoCCAFaAggBYgIIEmoDCMg+cgQIvIwGigEDCIYwkgEDCgFUmgEHCgUyMjI0MKIBAggEygECCAHvLoo3
+....
+

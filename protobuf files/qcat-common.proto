@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2020. Ingo Noka
+ * This file belongs to project qrvslib.
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License.
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/ or send a letter to
+ * Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+ *
+ */
+
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.ingonoka.qrsvlib.proto";
+
+package com.ingonoka.qrsvlib.proto;
+
+
+// Boarding stop with ID
+// Note: stop ids are unique only in conjunction with an operator ID or a validity domain
+message UniqueStopId {
+  oneof scope {
+    uint32 operatorId = 1;
+    uint32 validityDomain = 2;
+  }
+  uint32 stopId = 3;
+}
+
+// Route ID
+// Note: route ids are unique only in conjunction with an operator ID or a validity domain
+message UniqueRouteId {
+  repeated uint32 operatorId = 1;
+  repeated uint32 validityDomain = 2;
+  uint32 routeId = 3;
+}
+
+// Validity domain ID
+// Note: If operator ID is `0`, then the validity domain ID must be one of default domains
+// Note: custom validity domain IDs  are unique only in conjunction with an operator ID
+message UniqueValidityDomain {
+  uint32 operatorId = 1;
+  repeated uint32 domainId = 2;
+}
+
+enum TransactionType {
+
+  /**
+   * Unspecified type
+   */
+  NO_TRANSACTION_TYPE = 0;
+  /**
+   * Ticket sale for cash
+   */
+  CASH_SALE = 1;
+  /**
+   * Ticket sale for QR code (eWallet or similar)
+   */
+  QR_SALE = 2;
+  /**
+   * Beep card tap in
+   */
+  BEEP_TAP_IN = 3;
+  /**
+   * Beep card tap out
+   */
+  BEEP_TAP_OUT = 4;
+  /**
+   * QR scan-in
+   */
+  QR_SCAN_IN = 5;
+  /**
+   * QR scan out
+   */
+  QR_SCAN_OUT = 6;
+  /**
+   * Inspection of a beep card
+   */
+  BEEP_INSPECTION = 7;
+  /**
+   * Inspection of a QR ticket
+   */
+  QR_INSPECTION = 8;
+}
+
+message UniqueTicketType {
+  uint32 creator = 1;
+  uint32 type = 2;
+}

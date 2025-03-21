@@ -1,0 +1,54 @@
+{
+  "ticketValidityDomain": [],
+  "transportOperatorId": [
+    {
+      "value": 578
+    }
+  ],
+  "ticketType": [
+    {
+      "value": 1
+    }
+  ],
+  "uniqueBoardingStation": [],
+  "uniqueDestinationStation": [],
+  "ticketId": 383,
+  "creatorId": 578,
+  "creationTimeStamp": 1741764259,
+  "ticketValidityPeriod": 30940,
+  "effectiveTime": null,
+  "refreshTime": null,
+  "accountIdentifier": null,
+  "boardingStation": {
+    "value": 2
+  },
+  "destinationStation": {
+    "value": 5
+  },
+  "vehicleId": {
+    "value": 8008
+  },
+  "routeId": {
+    "value": 43101
+  },
+  "seatNumber": null,
+  "seatClass": null,
+  "maximumAuthorizedAmount": {
+    "value": 1300
+  },
+  "signatureKeyIdentifier": {
+    "value": "P1"
+  },
+  "terminalIdentifier": {
+    "value": "22240"
+  },
+  "signatureVersion": {
+    "value": 4
+  },
+  "qcatSignature": null,
+  "encodedPayload": null,
+  "fundingSourceType": {
+    "value": 1
+  },
+  "fundingSourceProvider": null
+}
